@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rag-Memory: Nostalgia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: radial-gradient(circle, #1a1a2e 0%, #0f0f1a 100%);
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+        .pokemon-card {
+            perspective: 1000px;
+        }
+        .card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        .card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            backface-visibility: hidden;
+            border-radius: 8px;
+        }
+        .card-back {
+            background: linear-gradient(135deg, #2c3e50, #000000);
+            border: 2px solid #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+        }
+        .card-front {
+            transform: rotateY(180deg);
+            background: #fff;
+        }
+        .vortex {
+            width: 70%;
+            height: 70%;
+            background: repeating-conic-gradient(from 0deg, #3498db, #9b59b6, #3498db 30deg);
+            border-radius: 50%;
+            animation: spin 4s linear infinite;
+        }
+		.matched-card .card-front {
+			filter: brightness(0.7) contrast(1.1);
+			border-color: #4ade80 !important; /* Green glow for matches */
+			transition: all 0.3s ease;
+		}
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .lcd-text { font-family: 'Press Start 2P', cursive; }
+    </style>
+</head>
+<body class="h-screen flex items-center justify-center p-4">
+
+    <div id="setup-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md">
+        <div class="bg-slate-900 border-4 border-red-600 p-8 rounded-2xl w-full max-w-md shadow-[0_0_50px_rgba(220,38,38,0.5)]">
+            <h1 class="text-2xl text-yellow-400 mb-6 text-center lcd-text leading-relaxed">CHOOSE YOUR ADVENTURE</h1>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs mb-2 text-slate-400 uppercase">Trainer Nickname</label>
+                    <input id="nickname" type="text" placeholder="ASH_K" class="w-full bg-slate-800 border-2 border-slate-700 p-3 rounded text-white focus:border-blue-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs mb-2 text-slate-400 uppercase">Difficulty</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="setDiff('Easy', 12, 30)" class="diff-btn p-3 rounded border-2 border-slate-700 hover:bg-green-600/20 hover:border-green-500 transition">Easy (4x3)</button>
+                        <button onclick="setDiff('Medium', 16, 35)" class="diff-btn p-3 rounded border-2 border-slate-700 hover:bg-blue-600/20 hover:border-blue-500 transition">Medium (4x4)</button>
+                        <button onclick="setDiff('Hard', 24, 45)" class="diff-btn p-3 rounded border-2 border-slate-700 hover:bg-red-600/20 hover:border-red-500 transition">Hard (6x4)</button>
+                        <button onclick="setDiff('Ultra', 36, 60)" class="diff-btn p-3 rounded border-2 border-slate-700 hover:bg-purple-600/20 hover:border-purple-500 transition">Ultra (6x6)</button>
+                    </div>
+                </div>
+
+                <button onclick="startGame()" class="w-full mt-6 bg-red-600 hover:bg-red-500 py-4 rounded-xl text-xl font-bold uppercase tracking-widest shadow-lg shadow-red-900/50">Start Battle</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-ui" class="hidden w-full max-w-5xl h-full flex flex-col">
+        <div class="bg-slate-900/80 border-b-4 border-red-600 p-4 rounded-t-3xl flex justify-between items-center">
+			<div>
+				<p class="text-[10px] text-slate-400 uppercase">Trainer</p>
+				<p id="ui-name" class="text-blue-400 font-bold">---</p>
+			</div>
+			<div class="text-center flex gap-8">
+				<div>
+					<p class="text-[10px] text-slate-400 uppercase">Matches</p>
+					<p id="ui-matches" class="text-yellow-400 font-bold">0 / 0</p>
+				</div>
+				<div>
+					<p class="text-[10px] text-slate-400 uppercase">Time</p>
+					<p id="ui-timer" class="text-white font-bold lcd-text text-sm">0s</p>
+				</div>
+			</div>
+			<div class="text-right">
+				<p class="text-[10px] text-slate-400 uppercase">Difficulty</p>
+				<p id="ui-diff" class="text-purple-400 font-bold uppercase">---</p>
+			</div>
+		</div>
+
+        <div id="game-grid" class="flex-grow bg-slate-800/50 p-6 grid gap-4 items-center justify-center overflow-auto border-x-4 border-slate-900">
+            </div>
+
+        <div class="bg-slate-900 p-6 rounded-b-3xl border-t-4 border-slate-700">
+            <div class="flex justify-between items-end mb-2">
+                <span class="lcd-text text-sm text-yellow-500">MOVES LEFT: <span id="ui-moves">0</span></span>
+                <button onclick="location.reload()" class="text-[10px] text-slate-500 hover:text-white uppercase tracking-tighter underline">Forfeit Battle</button>
+            </div>
+            <div class="w-full bg-slate-800 h-6 rounded-full overflow-hidden border-2 border-slate-700">
+                <div id="stamina-bar" class="h-full bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 transition-all duration-500" style="width: 100%"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+		const monsterImages = [
+        'imgs/img1.png',
+        'imgs/img2.png',
+        'imgs/img3.png',
+        'imgs/img4.png',
+        'imgs/img5.png',
+        'imgs/img6.png',
+        'imgs/img7.png',
+        'imgs/img8.png',
+        'imgs/img9.png',
+        'imgs/img10.png',
+        'imgs/img11.png',
+        'imgs/img12.png',
+        'imgs/img13.png',
+        'imgs/img14.png',
+        'imgs/img15.png',
+        'imgs/img16.png',
+        'imgs/img17.png',
+        'imgs/img18.png'
+    ];
+
+		let flippedCards = [];
+		let matches = 0;
+		let totalPairs = 0;
+		let movesLeft = 0;
+		let maxMoves = 0;
+		let currentDiff = '';
+		
+		// Timer Variables
+		let secondsElapsed = 0;
+		let timerInterval = null;
+
+		function setDiff(name, count, moves) {
+			currentDiff = name;
+			totalPairs = count / 2;
+			movesLeft = moves;
+			maxMoves = moves;
+			document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('bg-blue-600', 'border-white'));
+			event.target.classList.add('bg-blue-600', 'border-white');
+		}
+
+		function startTimer() {
+			secondsElapsed = 0;
+			clearInterval(timerInterval);
+			timerInterval = setInterval(() => {
+				secondsElapsed++;
+				document.getElementById('ui-timer').innerText = secondsElapsed + 's';
+			}, 1000);
+		}
+
+		function startGame() {
+			const name = document.getElementById('nickname').value || 'TRAINER';
+			if (!currentDiff) return alert('Select a difficulty!');
+
+			document.getElementById('setup-modal').classList.add('hidden');
+			document.getElementById('game-ui').classList.remove('hidden');
+			
+			document.getElementById('ui-name').innerText = name;
+			document.getElementById('ui-diff').innerText = currentDiff;
+			
+			updateUI();
+			initGrid();
+			startTimer(); // Start the clock
+		}
+
+		function initGrid() {
+			const grid = document.getElementById('game-grid');
+			const cols = currentDiff === 'Easy' ? 'grid-cols-4' : currentDiff === 'Medium' ? 'grid-cols-4' : 'grid-cols-6';
+			grid.className = `flex-grow bg-slate-800/50 p-6 grid ${cols} gap-4 items-center justify-center overflow-auto border-x-4 border-slate-900`;
+
+			const selectedImgs = monsterImages.slice(0, totalPairs);
+			const gameDeck = [...selectedImgs, ...selectedImgs].sort(() => Math.random() - 0.5);
+
+			grid.innerHTML = '';
+			gameDeck.forEach((imgUrl) => {
+				const card = document.createElement('div');
+				card.className = 'pokemon-card w-16 h-24 md:w-28 md:h-40';
+				card.innerHTML = `
+					<div class="card-inner w-full h-full relative" onclick="flipCard(this, '${imgUrl}')">
+						<div class="card-back absolute inset-0 rounded-lg overflow-hidden border-2 border-blue-500 shadow-lg">
+							<div class="vortex"></div>
+						</div>
+						<div class="card-front absolute inset-0 bg-white rounded-lg border-4 border-yellow-400 overflow-hidden">
+							<img src="${imgUrl}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150?text=Mon'">
+						</div>
+					</div>
+				`;
+				grid.appendChild(card);
+			});
+		}
+
+		function flipCard(cardEl, img) {
+			if (flippedCards.length < 2 && !cardEl.classList.contains('flipped')) {
+				cardEl.classList.add('flipped');
+				flippedCards.push({ el: cardEl, img: img });
+
+				if (flippedCards.length === 2) {
+					movesLeft--;
+					setTimeout(checkMatch, 600);
+				}
+			}
+		}
+
+		function checkMatch() {
+			const [c1, c2] = flippedCards;
+			
+			if (c1.img === c2.img) {
+				matches++;
+				// STABILITY FIX: We add a class but don't change the scale/filter of the parent
+				c1.el.classList.add('matched-card');
+				c2.el.classList.add('matched-card');
+				// Change border to green to indicate success
+				c1.el.querySelector('.card-front').style.borderColor = '#4ade80';
+				c2.el.querySelector('.card-front').style.borderColor = '#4ade80';
+			} else {
+				c1.el.classList.remove('flipped');
+				c2.el.classList.remove('flipped');
+			}
+			
+			flippedCards = [];
+			updateUI();
+			checkGameOver();
+		}
+
+		function updateUI() {
+			document.getElementById('ui-matches').innerText = `${matches} / ${totalPairs}`;
+			document.getElementById('ui-moves').innerText = movesLeft;
+			const percentage = (movesLeft / maxMoves) * 100;
+			const bar = document.getElementById('stamina-bar');
+			bar.style.width = percentage + '%';
+			
+			if (percentage < 25) bar.style.backgroundColor = '#ef4444';
+			else if (percentage < 50) bar.style.backgroundColor = '#eab308';
+		}
+
+		function checkGameOver() {
+			if (matches === totalPairs) {
+				clearInterval(timerInterval);
+				alert(`VICTORY! Time: ${secondsElapsed}s | Moves Left: ${movesLeft}`);
+				location.reload();
+			} else if (movesLeft <= 0) {
+				clearInterval(timerInterval);
+				alert('GAME OVER! You ran out of moves.');
+				location.reload();
+			}
+		}
+	</script>	
+</body>
+</html>
