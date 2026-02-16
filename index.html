@@ -13,39 +13,63 @@
             color: white;
             overflow: hidden;
         }
+		* {
+			-webkit-tap-highlight-color: transparent;
+		}
         .pokemon-card {
             perspective: 1000px;
         }
         .card-inner {
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-            cursor: pointer;
-        }
+			transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+			transform-style: preserve-3d; /* CRITICAL for iPhone */
+			position: relative;
+			cursor: pointer;
+		}
         .card-inner.flipped {
             transform: rotateY(180deg);
         }
         .card-front, .card-back {
-            backface-visibility: hidden;
-            border-radius: 8px;
-        }
+			position: absolute;
+			inset: 0;
+			-webkit-backface-visibility: hidden; /* CRITICAL for Safari */
+			backface-visibility: hidden;
+			border-radius: 8px;
+		}
         .card-back {
-            background: linear-gradient(135deg, #2c3e50, #000000);
-            border: 2px solid #3498db;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
-        }
-        .card-front {
-            transform: rotateY(180deg);
-            background: #fff;
-        }
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(135deg, #2c3e50, #000000);
+			border: 2px solid #3498db;
+			border-radius: 8px;
+			z-index: 2;
+			transform: rotateY(0deg); /* Explicitly set base state */
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			overflow: hidden;
+			-webkit-backface-visibility: hidden;
+			backface-visibility: hidden;
+		}
+
+		.card-front {
+			background: #fff;
+			/* Pushes the front image 1px away from the back to prevent bleeding */
+			transform: rotateY(180deg) translateZ(1px); 
+			z-index: 1;
+		}
         .vortex {
-            width: 70%;
-            height: 70%;
-            background: repeating-conic-gradient(from 0deg, #3498db, #9b59b6, #3498db 30deg);
-            border-radius: 50%;
-            animation: spin 4s linear infinite;
+			/* Adjust size to be a perfect circle relative to the smallest card dimension */
+            width: 80%;
+			aspect-ratio: 1 / 1; 
+    
+			background: repeating-conic-gradient(from 0deg, #3498db, #9b59b6, #3498db 30deg);
+			border-radius: 50%;
+			animation: spin 4s linear infinite;
+    
+			/* Remove any absolute positioning if it was there before */
+			position: relative;
+			filter: blur(0.2px);
+			box-shadow: 0 0 20px rgba(52, 152, 219, 0.6);
         }
 		.matched-card .card-front {
 			filter: brightness(0.7) contrast(1.1);
