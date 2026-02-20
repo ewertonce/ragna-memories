@@ -16,13 +16,32 @@
 		* {
 			-webkit-tap-highlight-color: transparent;
 		}
+		/* Adjust the grid container for mobile padding */
+		#game-grid {
+			display: grid;
+			width: 100%;
+			flex-grow: 1;
+			gap: 10px;
+			padding: 10px;
+			justify-content: center;
+			align-content: center;
+			/* This ensures no scrollbar ever appears */
+			overflow: hidden; 
+			box-sizing: border-box;
+		}
         .pokemon-card {
-            perspective: 1000px;
-        }
+			perspective: 1000px;
+			width: 100%;
+			aspect-ratio: 2 / 3;
+			display: flex;
+			margin: 0 auto;
+		}
         .card-inner {
-			transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-			transform-style: preserve-3d; /* CRITICAL for iPhone */
+			width: 100%;
+			height: 100%;
 			position: relative;
+			transform-style: preserve-3d;
+			transition: transform 0.6s;
 			cursor: pointer;
 		}
         .card-inner.flipped {
@@ -78,6 +97,24 @@
 		}
         @keyframes spin { 100% { transform: rotate(360deg); } }
         .lcd-text { font-family: 'Press Start 2P', cursive; }
+
+		#game-ui {
+			height: 100vh;
+			display: flex;
+			flex-direction: column;
+			overflow: hidden; /* Prevent the whole page from scrolling */
+		}
+		@media (min-width: 768px) {
+			#game-grid {
+				gap: 1rem; /* Bigger gaps for desktop */
+			}
+		}
+		/* On larger screens, we can let them be a bit bigger */
+		@media (min-width: 768px) {
+			.pokemon-card {
+				max-width: 160px;
+			}
+		}
     </style>
 </head>
 <body class="h-screen flex items-center justify-center p-4">
@@ -108,7 +145,7 @@
     </div>
 
     <div id="game-ui" class="hidden w-full max-w-5xl h-full flex flex-col">
-        <div class="bg-slate-900/80 border-b-4 border-red-600 p-4 rounded-t-3xl flex justify-between items-center">
+        <div class="bg-slate-900/80 border-b-4 border-red-600 p-2 md:p-4 rounded-t-3xl flex justify-between items-center text-[10px] md:text-xs">
 			<div>
 				<p class="text-[10px] text-slate-400 uppercase">Trainer</p>
 				<p id="ui-name" class="text-blue-400 font-bold">---</p>
@@ -211,8 +248,32 @@
 
 		function initGrid() {
 			const grid = document.getElementById('game-grid');
-			const cols = currentDiff === 'Easy' ? 'grid-cols-4' : currentDiff === 'Medium' ? 'grid-cols-4' : 'grid-cols-6';
-			grid.className = `flex-grow bg-slate-800/50 p-6 grid ${cols} gap-4 items-center justify-center overflow-auto border-x-4 border-slate-900`;
+			const isMobile = window.innerWidth < 768;
+
+			// Define Grid Layout based on difficulty
+			let cols, rows;
+			if (currentDiff === 'Easy') {
+				cols = isMobile ? 3 : 4; 
+				rows = Math.ceil((totalPairs * 2) / cols);
+			} else if (currentDiff === 'Medium') {
+				cols = isMobile ? 4 : 4;
+				rows = Math.ceil((totalPairs * 2) / cols);
+			} else if (currentDiff === 'Hard') {
+				cols = isMobile ? 4 : 6; // Hard uses 6 cols on desktop
+				rows = Math.ceil((totalPairs * 2) / cols);
+			} else { // Ultra
+				cols = isMobile ? 6 : 9;
+				rows = Math.ceil((totalPairs * 2) / cols);
+			}
+
+			// Apply the column count
+			grid.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+
+			// DYNAMIC HEIGHT CALCULATION
+			// We calculate exactly how tall a card can be to fit the remaining space
+			const availableHeight = window.innerHeight - 200; // Header + Footer space
+			const paddingAndGaps = (rows + 1) * 10; // 10px gap between cards
+			const maxCardHeight = Math.floor((availableHeight - paddingAndGaps) / rows);
 
 			const selectedImgs = monsterImages.slice(0, totalPairs);
 			const gameDeck = [...selectedImgs, ...selectedImgs].sort(() => Math.random() - 0.5);
@@ -220,20 +281,32 @@
 			grid.innerHTML = '';
 			gameDeck.forEach((imgUrl) => {
 				const card = document.createElement('div');
-				card.className = 'pokemon-card w-16 h-24 md:w-28 md:h-40';
+				card.className = 'pokemon-card';
+				
+				// This is the fix: the card height is limited by the rows in play
+				card.style.maxHeight = `${maxCardHeight}px`;
+				card.style.maxWidth = `${Math.floor(maxCardHeight * 0.66)}px`; // Keep 2:3 ratio
+
 				card.innerHTML = `
-					<div class="card-inner w-full h-full relative" onclick="flipCard(this, '${imgUrl}')">
-						<div class="card-back absolute inset-0 rounded-lg overflow-hidden border-2 border-blue-500 shadow-lg">
+					<div class="card-inner" onclick="flipCard(this, '${imgUrl}')">
+						<div class="card-back absolute inset-0 rounded-lg border-2 border-blue-500 bg-slate-900 flex items-center justify-center overflow-hidden">
 							<div class="vortex"></div>
 						</div>
-						<div class="card-front absolute inset-0 bg-white rounded-lg border-4 border-yellow-400 overflow-hidden">
-							<img src="${imgUrl}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150?text=Mon'">
+						<div class="card-front absolute inset-0 bg-white rounded-lg border-2 border-yellow-400 overflow-hidden">
+							<img src="${imgUrl}" class="w-full h-full object-cover">
 						</div>
 					</div>
 				`;
 				grid.appendChild(card);
 			});
 		}
+
+		// Add this to handle screen rotation or resizing
+		window.addEventListener('resize', () => {
+			if (!document.getElementById('game-ui').classList.contains('hidden')) {
+				initGrid();
+			}
+		});
 
 		function flipCard(cardEl, img) {
 			if (flippedCards.length < 2 && !cardEl.classList.contains('flipped')) {
