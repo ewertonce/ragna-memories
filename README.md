@@ -1,36 +1,36 @@
 # 🕹️ Ragna-Memory: Evolution
-**Ragna-Memory: Evolution** is a high-fidelity, web-based memory matching game inspired by the classic MMORPG Ragnarok Online. Built with a sleek "Pokedex" aesthetic, it challenges players to match elemental monsters under the pressure of a move-based stamina bar and a real-time clock.
+**Ragna-Memory: Evolution** is a high-fidelity, web-based memory matching game inspired by the classic MMORPG Ragnarok Online. Built with a medieval-fantasy aesthetic of parchment, carved wood, and gold, it challenges adventurers to match monster cards under the pressure of a move-based counter and a real-time clock.
 
 ## ✨ Features
-- **Adaptive Difficulty**: Choose your rank from Easy (4x3) to Ultra (8x8).
+- **Adaptive Difficulty**: Choose your rank from Novice (4x3) to Lord Knight (6x6).
 
-- **Stamina System**: Every move consumes "PP." If you run out of moves, your team faints!
+- **Moves System**: Every flip costs a move. Run out, and you're defeated!
 
 - **iOS/Safari Optimized**: Custom 3D CSS logic ensures smooth card flips without "ghosting" on iPhones.
 
-- **Dynamic Visuals**: Features a holographic "vortex" card-back design and elemental match effects.
+- **Dynamic Visuals**: Features a glowing Kafra-crystal card-back design set in a carved gold ring, with emerald match effects.
 
 ## 🚀 Live Demo
 Check out the game in action here: [ragna-memories](https://ewertonce.github.io/ragna-memories/)
 
 ## 🛠️ Tech Stack
-**HTML5 & CSS3**: Semantic structure and custom 3D transforms.
+**HTML5 & CSS3** (`style.css`): Semantic structure and custom 3D transforms.
 
-**Tailwind CSS**: For the futuristic, responsive UI.
+**Tailwind CSS**: For the responsive UI layout.
 
-**Vanilla JavaScript**: Core game logic, state management, and timers.
+**Vanilla JavaScript** (`game.js`): Core game logic, state management, and timers.
 
 ## 📦 Installation & Setup
 You don't need to install any dependencies. This is a "portable" project!
 
 <ol>
-  <li>Clone the repository: <code>git clone https://github.com/your-username/mon-memory.git</code></li>
+  <li>Clone the repository: <code>git clone https://github.com/ewertonce/ragna-memories.git</code></li>
   <li>Open the project: Simply double-click <code>index.html</code> to run it in your favorite browser.</li>
 </ol>  
 
 
 ## 🎨 Customizing Your Monsters
-To use your own monster images, simply update the <code>monsterImages</code> array in the <code><script></code> tag:
+To use your own monster images, simply update the <code>monsterImages</code> array in <code>game.js</code>:
 
     const monsterImages = [
     'path/to/your/monster1.png',
