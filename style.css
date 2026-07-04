@@ -1,0 +1,177 @@
+:root {
+    --parchment: #ecdcae;
+    --parchment-dim: #cbb583;
+    --wood-dark: #2c1c10;
+    --wood-mid: #5a3823;
+    --wood-light: #8a5e35;
+    --gold: #c9a227;
+    --gold-bright: #ecca5e;
+    --burgundy: #7a1620;
+    --burgundy-bright: #a3222e;
+    --emerald: #2f5233;
+    --ink: #2a1810;
+}
+body {
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(236, 202, 94, 0.10), transparent 55%),
+        linear-gradient(180deg, #221a35 0%, #402a42 30%, #6b3f3a 60%, #8f5a37 85%, #6b3f22 100%);
+    font-family: 'EB Garamond', serif;
+    color: var(--parchment);
+    overflow: hidden;
+}
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+.rune-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    font-variant-ligatures: none;
+    -webkit-font-feature-settings: "liga" 0, "dlig" 0;
+    font-feature-settings: "liga" 0, "dlig" 0;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.6), 0 0 18px rgba(236, 202, 94, 0.35);
+}
+.label-caps {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.14em;
+}
+.wood-panel {
+    background: linear-gradient(160deg, var(--wood-light) 0%, var(--wood-mid) 55%, var(--wood-dark) 100%);
+    border: 3px solid var(--gold);
+    box-shadow: inset 0 0 0 2px rgba(0,0,0,0.35), inset 0 2px 8px rgba(236,202,94,0.12), 0 12px 34px rgba(0,0,0,0.6);
+    position: relative;
+}
+.rivet {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--gold-bright), var(--gold) 55%, #6b4d10 100%);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+/* Adjust the grid container for mobile padding */
+#game-grid {
+    display: grid;
+    width: 100%;
+    flex-grow: 1;
+    gap: 10px;
+    padding: 10px;
+    justify-content: center;
+    align-content: center;
+    /* This ensures no scrollbar ever appears */
+    overflow: hidden;
+    box-sizing: border-box;
+}
+.memory-card {
+    perspective: 1000px;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    display: flex;
+    margin: 0 auto;
+}
+.card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    cursor: pointer;
+}
+.card-inner.flipped {
+    transform: rotateY(180deg);
+}
+.card-front, .card-back {
+    position: absolute;
+    inset: 0;
+    -webkit-backface-visibility: hidden; /* CRITICAL for Safari */
+    backface-visibility: hidden;
+    border-radius: 6px;
+}
+.card-back {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, #4a2e18 0%, var(--wood-dark) 75%);
+    border: 2px solid var(--gold);
+    border-radius: 6px;
+    z-index: 2;
+    transform: rotateY(0deg); /* Explicitly set base state */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.card-front {
+    background: var(--parchment);
+    /* Pushes the front image 1px away from the back to prevent bleeding */
+    transform: rotateY(180deg) translateZ(1px);
+    z-index: 1;
+}
+.gem-socket {
+    position: relative;
+    width: 62%;
+    aspect-ratio: 1 / 1;
+}
+.gem-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg,
+        #6b4d10, var(--gold-bright) 8%, #6b4d10 16%,
+        var(--gold-bright) 24%, #6b4d10 32%,
+        var(--gold-bright) 40%, #6b4d10 48%,
+        var(--gold-bright) 56%, #6b4d10 64%,
+        var(--gold-bright) 72%, #6b4d10 80%,
+        var(--gold-bright) 88%, #6b4d10 96%, #6b4d10 100%);
+    box-shadow: 0 0 8px rgba(0,0,0,0.5);
+}
+.gem {
+    position: absolute;
+    inset: 14%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 28%, #ff9a9a 0%, var(--burgundy-bright) 35%, var(--burgundy) 68%, #350a0e 100%);
+    box-shadow: 0 0 22px rgba(163,34,46,0.65), inset 0 -8px 16px rgba(0,0,0,0.5), inset 0 4px 10px rgba(255,255,255,0.25);
+    animation: gem-pulse 3.2s ease-in-out infinite;
+}
+.gem::after {
+    content: '';
+    position: absolute;
+    top: 16%;
+    left: 24%;
+    width: 26%;
+    height: 16%;
+    background: rgba(255,255,255,0.55);
+    border-radius: 50%;
+    filter: blur(2.5px);
+}
+@keyframes gem-pulse {
+    0%, 100% { box-shadow: 0 0 22px rgba(163,34,46,0.6), inset 0 -8px 16px rgba(0,0,0,0.5), inset 0 4px 10px rgba(255,255,255,0.25); }
+    50% { box-shadow: 0 0 34px rgba(163,34,46,0.9), inset 0 -8px 16px rgba(0,0,0,0.5), inset 0 4px 10px rgba(255,255,255,0.3); }
+}
+.matched-card .card-front {
+    filter: saturate(1.05);
+    border-color: var(--emerald) !important;
+    box-shadow: 0 0 14px rgba(47,82,51,0.65), inset 0 0 10px rgba(236,202,94,0.25);
+    transition: all 0.3s ease;
+}
+.stat-digits { font-family: 'Press Start 2P', cursive; }
+
+#game-ui {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Prevent the whole page from scrolling */
+}
+@media (min-width: 768px) {
+    #game-grid {
+        gap: 1rem; /* Bigger gaps for desktop */
+    }
+}
+/* On larger screens, we can let them be a bit bigger */
+@media (min-width: 768px) {
+    .memory-card {
+        max-width: 160px;
+    }
+}

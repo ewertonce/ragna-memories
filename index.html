@@ -5,364 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rag-Memory: Nostalgia</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <style>
-        body {
-            background: radial-gradient(circle, #1a1a2e 0%, #0f0f1a 100%);
-            font-family: 'Orbitron', sans-serif;
-            color: white;
-            overflow: hidden;
-        }
-		* {
-			-webkit-tap-highlight-color: transparent;
-		}
-		/* Adjust the grid container for mobile padding */
-		#game-grid {
-			display: grid;
-			width: 100%;
-			flex-grow: 1;
-			gap: 10px;
-			padding: 10px;
-			justify-content: center;
-			align-content: center;
-			/* This ensures no scrollbar ever appears */
-			overflow: hidden; 
-			box-sizing: border-box;
-		}
-        .pokemon-card {
-			perspective: 1000px;
-			width: 100%;
-			aspect-ratio: 2 / 3;
-			display: flex;
-			margin: 0 auto;
-		}
-        .card-inner {
-			width: 100%;
-			height: 100%;
-			position: relative;
-			transform-style: preserve-3d;
-			transition: transform 0.6s;
-			cursor: pointer;
-		}
-        .card-inner.flipped {
-            transform: rotateY(180deg);
-        }
-        .card-front, .card-back {
-			position: absolute;
-			inset: 0;
-			-webkit-backface-visibility: hidden; /* CRITICAL for Safari */
-			backface-visibility: hidden;
-			border-radius: 8px;
-		}
-        .card-back {
-			position: absolute;
-			inset: 0;
-			background: linear-gradient(135deg, #2c3e50, #000000);
-			border: 2px solid #3498db;
-			border-radius: 8px;
-			z-index: 2;
-			transform: rotateY(0deg); /* Explicitly set base state */
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			overflow: hidden;
-			-webkit-backface-visibility: hidden;
-			backface-visibility: hidden;
-		}
-
-		.card-front {
-			background: #fff;
-			/* Pushes the front image 1px away from the back to prevent bleeding */
-			transform: rotateY(180deg) translateZ(1px); 
-			z-index: 1;
-		}
-        .vortex {
-			/* Adjust size to be a perfect circle relative to the smallest card dimension */
-            width: 80%;
-			aspect-ratio: 1 / 1; 
-    
-			background: repeating-conic-gradient(from 0deg, #3498db, #9b59b6, #3498db 30deg);
-			border-radius: 50%;
-			animation: spin 4s linear infinite;
-    
-			/* Remove any absolute positioning if it was there before */
-			position: relative;
-			filter: blur(0.2px);
-			box-shadow: 0 0 20px rgba(52, 152, 219, 0.6);
-        }
-		.matched-card .card-front {
-			filter: brightness(0.7) contrast(1.1);
-			border-color: #4ade80 !important; /* Green glow for matches */
-			transition: all 0.3s ease;
-		}
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        .lcd-text { font-family: 'Press Start 2P', cursive; }
-
-		#game-ui {
-			height: 100vh;
-			display: flex;
-			flex-direction: column;
-			overflow: hidden; /* Prevent the whole page from scrolling */
-		}
-		@media (min-width: 768px) {
-			#game-grid {
-				gap: 1rem; /* Bigger gaps for desktop */
-			}
-		}
-		/* On larger screens, we can let them be a bit bigger */
-		@media (min-width: 768px) {
-			.pokemon-card {
-				max-width: 160px;
-			}
-		}
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
 </head>
 <body class="h-screen flex items-center justify-center p-4">
 
-    <div id="setup-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md">
-        <div class="bg-slate-900 border-4 border-red-600 p-8 rounded-2xl w-full max-w-md shadow-[0_0_50px_rgba(220,38,38,0.5)]">
-            <h1 class="text-2xl text-yellow-400 mb-6 text-center lcd-text leading-relaxed">CHOOSE YOUR ADVENTURE</h1>
-            
+    <div id="setup-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+        <div class="wood-panel p-8 rounded-lg w-full max-w-md shadow-[0_0_60px_rgba(236,202,94,0.25)]">
+            <span class="rivet" style="top: 10px; left: 10px;"></span>
+            <span class="rivet" style="top: 10px; right: 10px;"></span>
+            <span class="rivet" style="bottom: 10px; left: 10px;"></span>
+            <span class="rivet" style="bottom: 10px; right: 10px;"></span>
+
+            <h1 class="rune-title text-3xl text-[var(--gold-bright)] mb-6 text-center leading-relaxed">Choose Your Path</h1>
+
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs mb-2 text-slate-400 uppercase">Trainer Nickname</label>
-                    <input id="nickname" type="text" placeholder="ASH_K" class="w-full bg-slate-800 border-2 border-slate-700 p-3 rounded text-white focus:border-blue-500 outline-none">
+                    <label class="label-caps block text-xs mb-2 text-[var(--parchment-dim)] uppercase">Adventurer Name</label>
+                    <input id="nickname" type="text" placeholder="NOVICE_01" class="w-full bg-[var(--wood-dark)]/60 border-2 border-[var(--gold)]/40 p-3 rounded text-[var(--parchment)] placeholder:text-[var(--parchment-dim)]/50 focus:border-[var(--gold-bright)] outline-none">
                 </div>
 
                 <div>
-                    <label class="block text-xs mb-2 text-slate-400 uppercase">Difficulty</label>
+                    <label class="label-caps block text-xs mb-2 text-[var(--parchment-dim)] uppercase">Rank</label>
                     <div class="grid grid-cols-2 gap-2">
-                        <button onclick="setDiff('Easy', 12, 30)" class="diff-btn p-3 rounded border-2 border-slate-700 hover:bg-green-600/20 hover:border-green-500 transition">Easy (4x3)</button>
-                        <button onclick="setDiff('Medium', 16, 35)" class="diff-btn p-3 rounded border-2 border-slate-700 hover:bg-blue-600/20 hover:border-blue-500 transition">Medium (4x4)</button>
-                        <button onclick="setDiff('Hard', 24, 45)" class="diff-btn p-3 rounded border-2 border-slate-700 hover:bg-red-600/20 hover:border-red-500 transition">Hard (6x4)</button>
-                        <button onclick="setDiff('Ultra', 36, 60)" class="diff-btn p-3 rounded border-2 border-slate-700 hover:bg-purple-600/20 hover:border-purple-500 transition">Ultra (6x6)</button>
+                        <button onclick="setDiff('Novice', 12, 30)" class="diff-btn p-3 rounded border-2 border-[var(--gold)]/30 text-[var(--parchment)] hover:bg-emerald-800/30 hover:border-emerald-400 transition">Novice (4x3)</button>
+                        <button onclick="setDiff('Swordsman', 16, 35)" class="diff-btn p-3 rounded border-2 border-[var(--gold)]/30 text-[var(--parchment)] hover:bg-sky-800/30 hover:border-sky-400 transition">Swordsman (4x4)</button>
+                        <button onclick="setDiff('Knight', 24, 45)" class="diff-btn p-3 rounded border-2 border-[var(--gold)]/30 text-[var(--parchment)] hover:bg-red-900/30 hover:border-[var(--burgundy-bright)] transition">Knight (6x4)</button>
+                        <button onclick="setDiff('Lord Knight', 36, 60)" class="diff-btn p-3 rounded border-2 border-[var(--gold)]/30 text-[var(--parchment)] hover:bg-purple-900/30 hover:border-purple-400 transition">Lord Knight (6x6)</button>
                     </div>
                 </div>
 
-                <button onclick="startGame()" class="w-full mt-6 bg-red-600 hover:bg-red-500 py-4 rounded-xl text-xl font-bold uppercase tracking-widest shadow-lg shadow-red-900/50">Start Battle</button>
+                <button onclick="startGame()" class="label-caps w-full mt-6 bg-gradient-to-b from-[var(--burgundy-bright)] to-[var(--burgundy)] border-2 border-[var(--gold)] hover:from-[var(--gold-bright)] hover:to-[var(--gold)] hover:text-[var(--ink)] py-4 rounded-lg text-lg font-bold uppercase tracking-widest shadow-lg shadow-black/50 transition">Begin Quest</button>
             </div>
         </div>
     </div>
 
     <div id="game-ui" class="hidden w-full max-w-5xl h-full flex flex-col">
-        <div class="bg-slate-900/80 border-b-4 border-red-600 p-2 md:p-4 rounded-t-3xl flex justify-between items-center text-[10px] md:text-xs">
+        <div class="wood-panel !border-b-0 rounded-t-xl p-2 md:p-4 flex justify-between items-center text-[10px] md:text-xs">
 			<div>
-				<p class="text-[10px] text-slate-400 uppercase">Trainer</p>
-				<p id="ui-name" class="text-blue-400 font-bold">---</p>
+				<p class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase">Adventurer</p>
+				<p id="ui-name" class="text-[var(--gold-bright)] font-bold">---</p>
 			</div>
 			<div class="text-center flex gap-8">
 				<div>
-					<p class="text-[10px] text-slate-400 uppercase">Matches</p>
-					<p id="ui-matches" class="text-yellow-400 font-bold">0 / 0</p>
+					<p class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase">Matches</p>
+					<p id="ui-matches" class="text-[var(--parchment)] font-bold">0 / 0</p>
 				</div>
 				<div>
-					<p class="text-[10px] text-slate-400 uppercase">Time</p>
-					<p id="ui-timer" class="text-white font-bold lcd-text text-sm">0s</p>
+					<p class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase">Time</p>
+					<p id="ui-timer" class="text-[var(--parchment)] font-bold stat-digits text-sm">0s</p>
 				</div>
 			</div>
 			<div class="text-right">
-				<p class="text-[10px] text-slate-400 uppercase">Difficulty</p>
-				<p id="ui-diff" class="text-purple-400 font-bold uppercase">---</p>
+				<p class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase">Rank</p>
+				<p id="ui-diff" class="text-[var(--burgundy-bright)] font-bold uppercase">---</p>
 			</div>
 		</div>
 
-        <div id="game-grid" class="flex-grow bg-slate-800/50 p-6 grid gap-4 items-center justify-center overflow-auto border-x-4 border-slate-900">
+        <div id="game-grid" class="flex-grow bg-[var(--wood-dark)]/40 p-6 grid gap-4 items-center justify-center overflow-auto border-x-4 border-[var(--wood-mid)]">
             </div>
 
-        <div class="bg-slate-900 p-6 rounded-b-3xl border-t-4 border-slate-700">
+        <div class="wood-panel !border-t-0 rounded-b-xl p-6">
             <div class="flex justify-between items-end mb-2">
-                <span class="lcd-text text-sm text-yellow-500">MOVES LEFT: <span id="ui-moves">0</span></span>
-                <button onclick="location.reload()" class="text-[10px] text-slate-500 hover:text-white uppercase tracking-tighter underline">Forfeit Battle</button>
+                <span class="stat-digits text-sm text-[var(--gold-bright)]">MOVES LEFT: <span id="ui-moves">0</span></span>
+                <button onclick="location.reload()" class="label-caps text-[10px] text-[var(--parchment-dim)] hover:text-[var(--gold-bright)] uppercase tracking-tighter underline">Abandon Quest</button>
             </div>
-            <div class="w-full bg-slate-800 h-6 rounded-full overflow-hidden border-2 border-slate-700">
-                <div id="stamina-bar" class="h-full bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 transition-all duration-500" style="width: 100%"></div>
+            <div class="w-full bg-[var(--wood-dark)] h-6 rounded-full overflow-hidden border-2 border-[var(--gold)]/50">
+                <div id="stamina-bar" class="h-full bg-[var(--emerald)] transition-all duration-500" style="width: 100%"></div>
             </div>
         </div>
     </div>
 
-    <script>
-		const monsterImages = [
-        'imgs/img1.png',
-        'imgs/img2.png',
-        'imgs/img3.png',
-        'imgs/img4.png',
-        'imgs/img5.png',
-        'imgs/img6.png',
-        'imgs/img7.png',
-        'imgs/img8.png',
-        'imgs/img9.png',
-        'imgs/img10.png',
-        'imgs/img11.png',
-        'imgs/img12.png',
-        'imgs/img13.png',
-        'imgs/img14.png',
-        'imgs/img15.png',
-        'imgs/img16.png',
-        'imgs/img17.png',
-        'imgs/img18.png'
-    ];
-
-		let flippedCards = [];
-		let matches = 0;
-		let totalPairs = 0;
-		let movesLeft = 0;
-		let maxMoves = 0;
-		let currentDiff = '';
-		
-		// Timer Variables
-		let secondsElapsed = 0;
-		let timerInterval = null;
-
-		function setDiff(name, count, moves) {
-			currentDiff = name;
-			totalPairs = count / 2;
-			movesLeft = moves;
-			maxMoves = moves;
-			document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('bg-blue-600', 'border-white'));
-			event.target.classList.add('bg-blue-600', 'border-white');
-		}
-
-		function startTimer() {
-			secondsElapsed = 0;
-			clearInterval(timerInterval);
-			timerInterval = setInterval(() => {
-				secondsElapsed++;
-				document.getElementById('ui-timer').innerText = secondsElapsed + 's';
-			}, 1000);
-		}
-
-		function startGame() {
-			const name = document.getElementById('nickname').value || 'TRAINER';
-			if (!currentDiff) return alert('Select a difficulty!');
-
-			document.getElementById('setup-modal').classList.add('hidden');
-			document.getElementById('game-ui').classList.remove('hidden');
-			
-			document.getElementById('ui-name').innerText = name;
-			document.getElementById('ui-diff').innerText = currentDiff;
-			
-			updateUI();
-			initGrid();
-			startTimer(); // Start the clock
-		}
-
-		function initGrid() {
-			const grid = document.getElementById('game-grid');
-			const isMobile = window.innerWidth < 768;
-
-			// Define Grid Layout based on difficulty
-			let cols, rows;
-			if (currentDiff === 'Easy') {
-				cols = isMobile ? 3 : 4; 
-				rows = Math.ceil((totalPairs * 2) / cols);
-			} else if (currentDiff === 'Medium') {
-				cols = isMobile ? 4 : 4;
-				rows = Math.ceil((totalPairs * 2) / cols);
-			} else if (currentDiff === 'Hard') {
-				cols = isMobile ? 4 : 6; // Hard uses 6 cols on desktop
-				rows = Math.ceil((totalPairs * 2) / cols);
-			} else { // Ultra
-				cols = isMobile ? 6 : 9;
-				rows = Math.ceil((totalPairs * 2) / cols);
-			}
-
-			// Apply the column count
-			grid.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
-
-			// DYNAMIC HEIGHT CALCULATION
-			// We calculate exactly how tall a card can be to fit the remaining space
-			const availableHeight = window.innerHeight - 200; // Header + Footer space
-			const paddingAndGaps = (rows + 1) * 10; // 10px gap between cards
-			const maxCardHeight = Math.floor((availableHeight - paddingAndGaps) / rows);
-
-			const selectedImgs = monsterImages.slice(0, totalPairs);
-			const gameDeck = [...selectedImgs, ...selectedImgs].sort(() => Math.random() - 0.5);
-
-			grid.innerHTML = '';
-			gameDeck.forEach((imgUrl) => {
-				const card = document.createElement('div');
-				card.className = 'pokemon-card';
-				
-				// This is the fix: the card height is limited by the rows in play
-				card.style.maxHeight = `${maxCardHeight}px`;
-				card.style.maxWidth = `${Math.floor(maxCardHeight * 0.66)}px`; // Keep 2:3 ratio
-
-				card.innerHTML = `
-					<div class="card-inner" onclick="flipCard(this, '${imgUrl}')">
-						<div class="card-back absolute inset-0 rounded-lg border-2 border-blue-500 bg-slate-900 flex items-center justify-center overflow-hidden">
-							<div class="vortex"></div>
-						</div>
-						<div class="card-front absolute inset-0 bg-white rounded-lg border-2 border-yellow-400 overflow-hidden">
-							<img src="${imgUrl}" class="w-full h-full object-cover">
-						</div>
-					</div>
-				`;
-				grid.appendChild(card);
-			});
-		}
-
-		// Add this to handle screen rotation or resizing
-		window.addEventListener('resize', () => {
-			if (!document.getElementById('game-ui').classList.contains('hidden')) {
-				initGrid();
-			}
-		});
-
-		function flipCard(cardEl, img) {
-			if (flippedCards.length < 2 && !cardEl.classList.contains('flipped')) {
-				cardEl.classList.add('flipped');
-				flippedCards.push({ el: cardEl, img: img });
-
-				if (flippedCards.length === 2) {
-					movesLeft--;
-					setTimeout(checkMatch, 600);
-				}
-			}
-		}
-
-		function checkMatch() {
-			const [c1, c2] = flippedCards;
-			
-			if (c1.img === c2.img) {
-				matches++;
-				// STABILITY FIX: We add a class but don't change the scale/filter of the parent
-				c1.el.classList.add('matched-card');
-				c2.el.classList.add('matched-card');
-				// Change border to green to indicate success
-				c1.el.querySelector('.card-front').style.borderColor = '#4ade80';
-				c2.el.querySelector('.card-front').style.borderColor = '#4ade80';
-			} else {
-				c1.el.classList.remove('flipped');
-				c2.el.classList.remove('flipped');
-			}
-			
-			flippedCards = [];
-			updateUI();
-			checkGameOver();
-		}
-
-		function updateUI() {
-			document.getElementById('ui-matches').innerText = `${matches} / ${totalPairs}`;
-			document.getElementById('ui-moves').innerText = movesLeft;
-			const percentage = (movesLeft / maxMoves) * 100;
-			const bar = document.getElementById('stamina-bar');
-			bar.style.width = percentage + '%';
-			
-			if (percentage < 25) bar.style.backgroundColor = '#ef4444';
-			else if (percentage < 50) bar.style.backgroundColor = '#eab308';
-		}
-
-		function checkGameOver() {
-			if (matches === totalPairs) {
-				clearInterval(timerInterval);
-				alert(`VICTORY! Time: ${secondsElapsed}s | Moves Left: ${movesLeft}`);
-				location.reload();
-			} else if (movesLeft <= 0) {
-				clearInterval(timerInterval);
-				alert('GAME OVER! You ran out of moves.');
-				location.reload();
-			}
-		}
-	</script>	
+    <script src="game.js"></script>
 </body>
 </html>
