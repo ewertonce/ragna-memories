@@ -36,6 +36,64 @@ const POINTS_PER_MATCH = 100;
 let secondsElapsed = 0;
 let timerInterval = null;
 
+// Sound System (synthesized via Web Audio API — no external assets needed)
+let audioCtx = null;
+let isMuted = localStorage.getItem('ragna-muted') === 'true';
+
+function getAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+}
+
+function playTone(freq, duration, type = 'square', delay = 0, volume = 0.15) {
+    if (isMuted) return;
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(volume, ctx.currentTime + delay);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(ctx.currentTime + delay);
+    osc.stop(ctx.currentTime + delay + duration);
+}
+
+function playFlipSound() {
+    playTone(440, 0.08, 'square', 0, 0.08);
+}
+
+function playMatchSound() {
+    playTone(660, 0.1, 'square', 0, 0.12);
+    playTone(880, 0.15, 'square', 0.1, 0.12);
+}
+
+function playMismatchSound() {
+    playTone(180, 0.25, 'sawtooth', 0, 0.1);
+}
+
+function playVictorySound() {
+    [523, 659, 784, 1047].forEach((freq, i) => playTone(freq, 0.18, 'square', i * 0.12, 0.13));
+}
+
+function playDefeatSound() {
+    [392, 349, 311, 262].forEach((freq, i) => playTone(freq, 0.25, 'sawtooth', i * 0.15, 0.1));
+}
+
+function toggleSound() {
+    isMuted = !isMuted;
+    localStorage.setItem('ragna-muted', isMuted);
+    updateSoundToggleUI();
+    if (!isMuted) playFlipSound();
+}
+
+function updateSoundToggleUI() {
+    const btn = document.getElementById('sound-toggle');
+    if (btn) btn.innerText = isMuted ? 'Sound: Off' : 'Sound: On';
+}
+
 function setDiff(name, count, moves) {
     currentDiff = name;
     totalPairs = count / 2;
@@ -138,6 +196,8 @@ function initGrid() {
     });
 }
 
+updateSoundToggleUI();
+
 // Add this to handle screen rotation or resizing
 window.addEventListener('resize', () => {
     if (!document.getElementById('game-ui').classList.contains('hidden')) {
@@ -148,6 +208,7 @@ window.addEventListener('resize', () => {
 function flipCard(cardEl, img) {
     if (flippedCards.length < 2 && !cardEl.classList.contains('flipped')) {
         cardEl.classList.add('flipped');
+        playFlipSound();
         flippedCards.push({ el: cardEl, img: img });
 
         if (flippedCards.length === 2) {
@@ -168,6 +229,7 @@ function checkMatch() {
         const gained = POINTS_PER_MATCH * combo;
         score += gained;
         showComboPopup(combo >= 2 ? `COMBO x${combo}! +${gained}` : `+${gained}`);
+        playMatchSound();
 
         // STABILITY FIX: We add a class but don't change the scale/filter of the parent
         c1.el.classList.add('matched-card');
@@ -178,6 +240,7 @@ function checkMatch() {
     } else {
         if (combo >= 2) showComboPopup('COMBO BROKEN', 'break');
         combo = 0;
+        playMismatchSound();
         c1.el.classList.remove('flipped');
         c2.el.classList.remove('flipped');
     }
@@ -243,6 +306,7 @@ function showModal({ title, stats = [], message = '', buttonText = 'Continue', o
 function checkGameOver() {
     if (matches === totalPairs) {
         clearInterval(timerInterval);
+        playVictorySound();
         showModal({
             title: 'Quest Complete!',
             stats: [
@@ -256,6 +320,7 @@ function checkGameOver() {
         });
     } else if (movesLeft <= 0) {
         clearInterval(timerInterval);
+        playDefeatSound();
         showModal({
             title: 'You Have Been Defeated',
             message: 'No moves remain — return to a save point.',

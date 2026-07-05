@@ -75,7 +75,10 @@
         <div class="wood-panel !border-t-0 rounded-b-xl p-6">
             <div class="flex justify-between items-end mb-2">
                 <span class="stat-digits text-sm text-[var(--gold-bright)]">MOVES LEFT: <span id="ui-moves">0</span></span>
-                <button onclick="location.reload()" class="label-caps text-[10px] text-[var(--parchment-dim)] hover:text-[var(--gold-bright)] uppercase tracking-tighter underline">Abandon Quest</button>
+                <div class="flex items-center gap-4">
+                    <button id="sound-toggle" onclick="toggleSound()" class="label-caps text-[10px] text-[var(--parchment-dim)] hover:text-[var(--gold-bright)] uppercase tracking-tighter underline">Sound: On</button>
+                    <button onclick="location.reload()" class="label-caps text-[10px] text-[var(--parchment-dim)] hover:text-[var(--gold-bright)] uppercase tracking-tighter underline">Abandon Quest</button>
+                </div>
             </div>
             <div class="w-full bg-[var(--wood-dark)] h-6 rounded-full overflow-hidden border-2 border-[rgba(201,162,39,0.5)]">
                 <div id="stamina-bar" class="h-full bg-[var(--emerald)] transition-all duration-500" style="width: 100%"></div>
