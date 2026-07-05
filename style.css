@@ -158,6 +158,19 @@ body {
 }
 .stat-digits { font-family: 'Press Start 2P', cursive; }
 
+/* Browser autofill forces its own light background on remembered inputs,
+   which otherwise leaves the light parchment text unreadable. */
+#nickname:-webkit-autofill,
+#nickname:-webkit-autofill:hover,
+#nickname:-webkit-autofill:focus,
+#nickname:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--parchment);
+    -webkit-box-shadow: 0 0 0 1000px var(--wood-dark) inset;
+    box-shadow: 0 0 0 1000px var(--wood-dark) inset;
+    caret-color: var(--parchment);
+    transition: background-color 9999s ease-in-out 0s;
+}
+
 #game-ui {
     height: 100vh;
     display: flex;

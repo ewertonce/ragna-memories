@@ -49,7 +49,7 @@ function startTimer() {
 }
 
 function startGame() {
-    const name = document.getElementById('nickname').value || 'ADVENTURER';
+    const name = document.getElementById('nickname').value.trim().slice(0, 20) || 'ADVENTURER';
     if (!currentDiff) return alert('Choose your path first, adventurer!');
 
     document.getElementById('setup-modal').classList.add('hidden');
