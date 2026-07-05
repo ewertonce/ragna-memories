@@ -83,6 +83,19 @@
         </div>
     </div>
 
+    <div id="result-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+        <div class="wood-panel p-8 rounded-lg w-full max-w-md shadow-[0_0_60px_rgba(236,202,94,0.25)] text-center">
+            <span class="rivet" style="top: 10px; left: 10px;"></span>
+            <span class="rivet" style="top: 10px; right: 10px;"></span>
+            <span class="rivet" style="bottom: 10px; left: 10px;"></span>
+            <span class="rivet" style="bottom: 10px; right: 10px;"></span>
+
+            <h2 id="modal-title" class="rune-title text-2xl mb-4 leading-relaxed"></h2>
+            <div id="modal-body" class="text-left mb-6"></div>
+            <button id="modal-btn" class="label-caps w-full bg-gradient-to-b from-[var(--burgundy-bright)] to-[var(--burgundy)] border-2 border-[var(--gold)] hover:from-[var(--gold-bright)] hover:to-[var(--gold)] hover:text-[var(--ink)] py-3 rounded-lg text-base font-bold uppercase tracking-widest shadow-lg shadow-black/50 transition"></button>
+        </div>
+    </div>
+
     <script src="game.js"></script>
 </body>
 </html>

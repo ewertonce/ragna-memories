@@ -56,7 +56,14 @@ function startTimer() {
 
 function startGame() {
     const name = document.getElementById('nickname').value.trim().slice(0, 20) || 'ADVENTURER';
-    if (!currentDiff) return alert('Choose your path first, adventurer!');
+    if (!currentDiff) {
+        showModal({
+            title: 'Hold, Adventurer!',
+            message: 'Choose your path first — pick a rank before beginning your quest.',
+            buttonText: 'Understood'
+        });
+        return;
+    }
 
     document.getElementById('setup-modal').classList.add('hidden');
     document.getElementById('game-ui').classList.remove('hidden');
@@ -209,14 +216,53 @@ function updateUI() {
     else if (percentage < 50) bar.style.backgroundColor = '#c9a227';
 }
 
+function showModal({ title, stats = [], message = '', buttonText = 'Continue', onConfirm, variant = 'default' }) {
+    const titleEl = document.getElementById('modal-title');
+    titleEl.innerText = title;
+    titleEl.style.color = variant === 'defeat' ? 'var(--burgundy-bright)' : 'var(--gold-bright)';
+
+    const messageHtml = message ? `<p class="text-[var(--parchment)] mb-4">${message}</p>` : '';
+    const statsHtml = stats.map(s => `
+        <div class="flex justify-between items-center text-sm border-b border-[rgba(201,162,39,0.2)] py-1.5">
+            <span class="label-caps text-[var(--parchment-dim)] uppercase text-xs">${s.label}</span>
+            <span class="font-bold stat-digits text-sm text-[var(--gold-bright)]">${s.value}</span>
+        </div>
+    `).join('');
+    document.getElementById('modal-body').innerHTML = messageHtml + statsHtml;
+
+    const btn = document.getElementById('modal-btn');
+    btn.innerText = buttonText;
+    btn.onclick = () => {
+        document.getElementById('result-modal').classList.add('hidden');
+        if (onConfirm) onConfirm();
+    };
+
+    document.getElementById('result-modal').classList.remove('hidden');
+}
+
 function checkGameOver() {
     if (matches === totalPairs) {
         clearInterval(timerInterval);
-        alert(`QUEST COMPLETE! Time: ${secondsElapsed}s | Moves Left: ${movesLeft} | Score: ${score} | Best Combo: x${bestCombo}`);
-        location.reload();
+        showModal({
+            title: 'Quest Complete!',
+            stats: [
+                { label: 'Time', value: `${secondsElapsed}s` },
+                { label: 'Moves Left', value: movesLeft },
+                { label: 'Score', value: score },
+                { label: 'Best Combo', value: `x${bestCombo}` },
+            ],
+            buttonText: 'Return to Town',
+            onConfirm: () => location.reload()
+        });
     } else if (movesLeft <= 0) {
         clearInterval(timerInterval);
-        alert(`YOU HAVE BEEN DEFEATED! Score: ${score} — No moves remain — return to a save point.`);
-        location.reload();
+        showModal({
+            title: 'You Have Been Defeated',
+            message: 'No moves remain — return to a save point.',
+            stats: [{ label: 'Score', value: score }],
+            buttonText: 'Return to Town',
+            onConfirm: () => location.reload(),
+            variant: 'defeat'
+        });
     }
 }
