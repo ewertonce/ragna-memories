@@ -26,6 +26,12 @@ let movesLeft = 0;
 let maxMoves = 0;
 let currentDiff = '';
 
+// Scoring
+let score = 0;
+let combo = 0;
+let bestCombo = 0;
+const POINTS_PER_MATCH = 100;
+
 // Timer Variables
 let secondsElapsed = 0;
 let timerInterval = null;
@@ -57,6 +63,10 @@ function startGame() {
 
     document.getElementById('ui-name').innerText = name;
     document.getElementById('ui-diff').innerText = currentDiff;
+
+    score = 0;
+    combo = 0;
+    bestCombo = 0;
 
     updateUI();
     initGrid();
@@ -142,9 +152,16 @@ function flipCard(cardEl, img) {
 
 function checkMatch() {
     const [c1, c2] = flippedCards;
+    const isMatch = c1.img === c2.img;
 
-    if (c1.img === c2.img) {
+    if (isMatch) {
         matches++;
+        combo++;
+        if (combo > bestCombo) bestCombo = combo;
+        const gained = POINTS_PER_MATCH * combo;
+        score += gained;
+        showComboPopup(combo >= 2 ? `COMBO x${combo}! +${gained}` : `+${gained}`);
+
         // STABILITY FIX: We add a class but don't change the scale/filter of the parent
         c1.el.classList.add('matched-card');
         c2.el.classList.add('matched-card');
@@ -152,18 +169,38 @@ function checkMatch() {
         c1.el.querySelector('.card-front').style.borderColor = '#2f5233';
         c2.el.querySelector('.card-front').style.borderColor = '#2f5233';
     } else {
+        if (combo >= 2) showComboPopup('COMBO BROKEN', 'break');
+        combo = 0;
         c1.el.classList.remove('flipped');
         c2.el.classList.remove('flipped');
     }
 
     flippedCards = [];
     updateUI();
+    if (isMatch) pulseScore();
     checkGameOver();
+}
+
+function showComboPopup(text, variant = 'combo') {
+    const el = document.getElementById('combo-popup');
+    el.textContent = text;
+    el.classList.remove('show', 'combo-break');
+    if (variant === 'break') el.classList.add('combo-break');
+    void el.offsetWidth; // restart animation
+    el.classList.add('show');
+}
+
+function pulseScore() {
+    const scoreEl = document.getElementById('ui-score');
+    scoreEl.classList.remove('pulse');
+    void scoreEl.offsetWidth; // restart animation
+    scoreEl.classList.add('pulse');
 }
 
 function updateUI() {
     document.getElementById('ui-matches').innerText = `${matches} / ${totalPairs}`;
     document.getElementById('ui-moves').innerText = movesLeft;
+    document.getElementById('ui-score').innerText = score;
     const percentage = (movesLeft / maxMoves) * 100;
     const bar = document.getElementById('stamina-bar');
     bar.style.width = percentage + '%';
@@ -175,11 +212,11 @@ function updateUI() {
 function checkGameOver() {
     if (matches === totalPairs) {
         clearInterval(timerInterval);
-        alert(`QUEST COMPLETE! Time: ${secondsElapsed}s | Moves Left: ${movesLeft}`);
+        alert(`QUEST COMPLETE! Time: ${secondsElapsed}s | Moves Left: ${movesLeft} | Score: ${score} | Best Combo: x${bestCombo}`);
         location.reload();
     } else if (movesLeft <= 0) {
         clearInterval(timerInterval);
-        alert('YOU HAVE BEEN DEFEATED! No moves remain — return to a save point.');
+        alert(`YOU HAVE BEEN DEFEATED! Score: ${score} — No moves remain — return to a save point.`);
         location.reload();
     }
 }

@@ -177,6 +177,45 @@ body {
     flex-direction: column;
     overflow: hidden; /* Prevent the whole page from scrolling */
 }
+
+.combo-popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.4);
+    z-index: 20;
+    pointer-events: none;
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 700;
+    font-size: clamp(1.1rem, 4vw, 2.25rem);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    color: var(--gold-bright);
+    text-shadow: 0 2px 0 rgba(0,0,0,0.6), 0 0 20px rgba(236, 202, 94, 0.55);
+    opacity: 0;
+}
+.combo-popup.show {
+    animation: combo-pop 0.8s ease-out;
+}
+.combo-popup.combo-break {
+    color: var(--burgundy-bright);
+    text-shadow: 0 2px 0 rgba(0,0,0,0.6), 0 0 16px rgba(163,34,46,0.5);
+}
+@keyframes combo-pop {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+    15% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+    30% { transform: translate(-50%, -50%) scale(1); }
+    75% { opacity: 1; }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(1) translateY(-24px); }
+}
+@keyframes score-pop {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+}
+#ui-score.pulse {
+    animation: score-pop 0.4s ease-out;
+}
 @media (min-width: 768px) {
     #game-grid {
         gap: 1rem; /* Bigger gaps for desktop */

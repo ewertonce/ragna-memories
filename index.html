@@ -55,6 +55,10 @@
 					<p class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase">Time</p>
 					<p id="ui-timer" class="text-[var(--parchment)] font-bold stat-digits text-sm">0s</p>
 				</div>
+				<div>
+					<p class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase">Score</p>
+					<p id="ui-score" class="text-[var(--gold-bright)] font-bold stat-digits text-sm">0</p>
+				</div>
 			</div>
 			<div class="text-right">
 				<p class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase">Rank</p>
@@ -62,8 +66,11 @@
 			</div>
 		</div>
 
-        <div id="game-grid" class="flex-grow bg-[rgba(44,28,16,0.4)] p-6 grid gap-4 items-center justify-center overflow-auto border-x-4 border-[var(--wood-mid)]">
-            </div>
+        <div class="relative flex-grow overflow-hidden">
+            <div id="game-grid" class="absolute inset-0 bg-[rgba(44,28,16,0.4)] p-6 grid gap-4 items-center justify-center overflow-auto border-x-4 border-[var(--wood-mid)]">
+                </div>
+            <div id="combo-popup" class="combo-popup"></div>
+        </div>
 
         <div class="wood-panel !border-t-0 rounded-b-xl p-6">
             <div class="flex justify-between items-end mb-2">
