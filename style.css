@@ -171,7 +171,6 @@ body {
     object-fit: cover;
     object-position: 50% 12%;
     display: block;
-    filter: saturate(1.08) contrast(1.05);
 }
 .hero-glow {
     position: absolute;
