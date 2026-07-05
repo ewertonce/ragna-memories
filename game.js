@@ -100,7 +100,44 @@ function setDiff(name, count, moves) {
     movesLeft = moves;
     maxMoves = moves;
     document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('bg-amber-900/40', 'border-amber-300'));
-    event.target.classList.add('bg-amber-900/40', 'border-amber-300');
+    event.currentTarget.classList.add('bg-amber-900/40', 'border-amber-300');
+}
+
+// Best score/time per rank (persisted in localStorage)
+const RANK_NAMES = ['Novice', 'Swordsman', 'Knight', 'Lord Knight'];
+
+function bestStorageKey(rank) {
+    return `ragna-best-${rank.replace(/\s+/g, '-').toLowerCase()}`;
+}
+
+function getBest(rank) {
+    try {
+        const raw = localStorage.getItem(bestStorageKey(rank));
+        return raw ? JSON.parse(raw) : { score: 0, time: null };
+    } catch {
+        return { score: 0, time: null };
+    }
+}
+
+function updateBestOnVictory(rank, finalScore, finalTime) {
+    const best = getBest(rank);
+    const newBestScore = finalScore > best.score;
+    const newBestTime = best.time === null || finalTime < best.time;
+
+    if (newBestScore) best.score = finalScore;
+    if (newBestTime) best.time = finalTime;
+    localStorage.setItem(bestStorageKey(rank), JSON.stringify(best));
+
+    return { best, newBestScore, newBestTime };
+}
+
+function renderBestLabels() {
+    RANK_NAMES.forEach(rank => {
+        const el = document.querySelector(`[data-best-for="${rank}"]`);
+        if (!el) return;
+        const best = getBest(rank);
+        el.textContent = best.score > 0 ? `Best: ${best.score} pts · ${best.time}s` : 'Best: —';
+    });
 }
 
 function startTimer() {
@@ -197,6 +234,7 @@ function initGrid() {
 }
 
 updateSoundToggleUI();
+renderBestLabels();
 
 // Add this to handle screen rotation or resizing
 window.addEventListener('resize', () => {
@@ -307,8 +345,12 @@ function checkGameOver() {
     if (matches === totalPairs) {
         clearInterval(timerInterval);
         playVictorySound();
+        const { newBestScore, newBestTime } = updateBestOnVictory(currentDiff, score, secondsElapsed);
         showModal({
             title: 'Quest Complete!',
+            message: (newBestScore || newBestTime)
+                ? '<span class="text-[var(--gold-bright)] font-bold uppercase tracking-widest">New Best!</span>'
+                : '',
             stats: [
                 { label: 'Time', value: `${secondsElapsed}s` },
                 { label: 'Moves Left', value: movesLeft },
