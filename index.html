@@ -10,7 +10,23 @@
 </head>
 <body class="h-screen flex items-center justify-center p-4">
 
-    <div id="setup-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+    <div id="setup-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+      <div class="flex items-center gap-6">
+
+        <div class="hidden lg:flex flex-col items-center gap-3 hero-portrait">
+            <div class="relative">
+                <div class="hero-glow"></div>
+                <div class="wood-panel hero-frame rounded-lg overflow-hidden relative">
+                    <span class="rivet" style="top: 6px; left: 6px;"></span>
+                    <span class="rivet" style="top: 6px; right: 6px;"></span>
+                    <span class="rivet" style="bottom: 6px; left: 6px;"></span>
+                    <span class="rivet" style="bottom: 6px; right: 6px;"></span>
+                    <img src="imgs/knight-hero.png" alt="A knight standing watch in Prontera" class="hero-img">
+                </div>
+            </div>
+            <span class="label-caps text-[10px] text-[var(--gold-bright)] uppercase tracking-widest hero-caption">Guardian of Prontera</span>
+        </div>
+
         <div class="wood-panel p-8 rounded-lg w-full max-w-md shadow-[0_0_60px_rgba(236,202,94,0.25)]">
             <span class="rivet" style="top: 10px; left: 10px;"></span>
             <span class="rivet" style="top: 10px; right: 10px;"></span>
@@ -50,6 +66,8 @@
                 <button onclick="startGame()" class="label-caps w-full mt-6 bg-gradient-to-b from-[var(--burgundy-bright)] to-[var(--burgundy)] border-2 border-[var(--gold)] hover:from-[var(--gold-bright)] hover:to-[var(--gold)] hover:text-[var(--ink)] py-4 rounded-lg text-lg font-bold uppercase tracking-widest shadow-lg shadow-black/50 transition">Begin Quest</button>
             </div>
         </div>
+
+      </div>
     </div>
 
     <div id="game-ui" class="hidden w-full max-w-5xl h-full flex flex-col">
