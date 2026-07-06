@@ -151,6 +151,7 @@ function startTimer() {
 
 function startGame() {
     const name = document.getElementById('nickname').value.trim().slice(0, 20) || 'ADVENTURER';
+    localStorage.setItem('ragna-nickname', name);
     if (!currentDiff) {
         showModal({
             title: 'Hold, Adventurer!',
@@ -235,6 +236,9 @@ function initGrid() {
 
 updateSoundToggleUI();
 renderBestLabels();
+
+const savedNickname = localStorage.getItem('ragna-nickname');
+if (savedNickname) document.getElementById('nickname').value = savedNickname;
 
 // Add this to handle screen rotation or resizing
 window.addEventListener('resize', () => {
