@@ -4,7 +4,7 @@
 ## ✨ Features
 - **Adaptive Difficulty**: Choose your rank from Novice (4x3) to Lord Knight (6x6).
 
-- **Moves System**: Every flip costs a move. Run out, and you're defeated!
+- **Moves System**: Only mismatches cost a move — find a pair, and it's free. Run out, and you're defeated!
 
 - **iOS/Safari Optimized**: Custom 3D CSS logic ensures smooth card flips without "ghosting" on iPhones.
 
@@ -37,14 +37,6 @@ To use your own monster images, simply update the <code>monsterImages</code> arr
     'path/to/your/monster2.png',
     // ... add up to 18 unique images
     ];
-## 🐞 Mobile Fixes Included
-This project includes specific CSS overrides to handle WebKit (Safari/iOS) rendering bugs:
 
-<code>transform-style: preserve-3d</code> for layer stability.
-
-<code>translateZ(1px)</code> to prevent card-back bleeding.
-
-<code>-webkit-backface-visibility: hidden</code> for smooth 180-degree rotations.
-
-## 📜 License
-Distributed under the MIT License. See <code>LICENSE</code> for more information.
+## ⚠️ Disclaimer
+This page was created purely out of nostalgia and love for Ragnarok Online. All original game content, artwork, characters, music, and trademarks belong to Gravity Co., Ltd. This is an unofficial fan tribute and is not affiliated with or endorsed by Gravity.
