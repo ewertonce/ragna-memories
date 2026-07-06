@@ -250,7 +250,6 @@ function flipCard(cardEl, img) {
         flippedCards.push({ el: cardEl, img: img });
 
         if (flippedCards.length === 2) {
-            movesLeft--;
             setTimeout(checkMatch, 600);
         }
     }
@@ -276,6 +275,7 @@ function checkMatch() {
         c1.el.querySelector('.card-front').style.borderColor = '#2f5233';
         c2.el.querySelector('.card-front').style.borderColor = '#2f5233';
     } else {
+        movesLeft--;
         if (combo >= 2) showComboPopup('COMBO BROKEN', 'break');
         combo = 0;
         playMismatchSound();
