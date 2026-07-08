@@ -61,6 +61,11 @@ body {
     /* This ensures no scrollbar ever appears */
     overflow: hidden;
     box-sizing: border-box;
+    background-image:
+        linear-gradient(rgba(20, 12, 8, 0.6), rgba(20, 12, 8, 0.72)),
+        url('imgs/prontera-map.jpg');
+    background-size: cover;
+    background-position: center;
 }
 .memory-card {
     perspective: 1000px;
