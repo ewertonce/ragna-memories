@@ -2,6 +2,10 @@
 
 All notable changes to Ragna-Memory are documented here.
 
+## [1.4.0] - 2026-07-09
+### Added
+- 25 more monster cards (ambernite, andre, ant_egg, bigfoot, boa, chonchon, creamy, drops, fabre, honet, hydra, lunatic, mandragora, pecopeco_egg, poporing, poring, pupa, roda_frog, santa_poring, smokie, spore, steel_chonchon, thief_bug_egg, vadon, zombie), growing the pool from 19 to 44 monsters
+
 ## [1.3.0] - 2026-07-09
 ### Added
 - 19th monster card (Argos), adding headroom above Lord Knight's 18-pair max
