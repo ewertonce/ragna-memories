@@ -206,7 +206,7 @@ function initGrid() {
     const paddingAndGaps = (rows + 1) * 10; // 10px gap between cards
     const maxCardHeight = Math.floor((availableHeight - paddingAndGaps) / rows);
 
-    const selectedImgs = monsterImages.slice(0, totalPairs);
+    const selectedImgs = [...monsterImages].sort(() => Math.random() - 0.5).slice(0, totalPairs);
     const gameDeck = [...selectedImgs, ...selectedImgs].sort(() => Math.random() - 0.5);
 
     grid.innerHTML = '';
