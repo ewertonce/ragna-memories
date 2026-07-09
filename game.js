@@ -17,7 +17,32 @@ const monsterImages = [
     'imgs/doppelganger.png',
     'imgs/dracula.png',
     'imgs/drake.png',
-    'imgs/argos.png'
+    'imgs/argos.png',
+    'imgs/ambernite.png',
+    'imgs/andre.png',
+    'imgs/ant_egg.png',
+    'imgs/bigfoot.png',
+    'imgs/boa.png',
+    'imgs/chonchon.png',
+    'imgs/creamy.png',
+    'imgs/drops.png',
+    'imgs/fabre.png',
+    'imgs/honet.png',
+    'imgs/hydra.png',
+    'imgs/lunatic.png',
+    'imgs/mandragora.png',
+    'imgs/pecopeco_egg.png',
+    'imgs/poporing.png',
+    'imgs/poring.png',
+    'imgs/pupa.png',
+    'imgs/roda_frog.png',
+    'imgs/santa_poring.png',
+    'imgs/smokie.png',
+    'imgs/spore.png',
+    'imgs/steel_chonchon.png',
+    'imgs/thief_bug_egg.png',
+    'imgs/vadon.png',
+    'imgs/zombie.png'
 ];
 
 let flippedCards = [];
