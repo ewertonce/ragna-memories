@@ -408,6 +408,7 @@ function checkGameOver() {
 
 let currentSessionId = null;
 let playerCountListener = null;
+let playerCountInitAttempts = 0;
 
 /**
  * Generates a unique session ID for this player
@@ -422,17 +423,27 @@ function generateSessionId() {
  */
 function initPlayerCountTracking() {
     if (!window.firebaseInitialized || !window.firebase) {
-        console.log('Firebase not available, skipping player count tracking');
+        playerCountInitAttempts++;
+        if (playerCountInitAttempts <= 20) {
+            console.log('Firebase not ready yet, retrying player count init...', playerCountInitAttempts);
+            setTimeout(initPlayerCountTracking, 200);
+            return;
+        }
+
+        console.error('Firebase player count tracking could not initialize after retries.');
         return;
     }
 
     try {
         const db = firebase.database();
 
+        console.log('Firebase player count tracking initialized');
+
         // Listener for real-time player count updates
         playerCountListener = db.ref('activeSessions').on('value', (snapshot) => {
             const sessions = snapshot.val() || {};
             const playerCount = Object.keys(sessions).length;
+            console.log('Player count updated:', playerCount);
             updatePlayerCountUI(playerCount);
         }, (error) => {
             console.error('Error reading player count:', error);
@@ -447,6 +458,7 @@ function initPlayerCountTracking() {
  */
 function startPlayerSession() {
     if (!window.firebaseInitialized || !window.firebase) {
+        console.warn('Cannot start player session: Firebase unavailable');
         return;
     }
 
@@ -461,8 +473,12 @@ function startPlayerSession() {
             rank: currentDiff || 'Unknown'
         };
 
+        console.log('Starting player session:', sessionData);
+
         // Add this session to the database
-        db.ref(`activeSessions/${currentSessionId}`).set(sessionData);
+        db.ref(`activeSessions/${currentSessionId}`).set(sessionData)
+            .then(() => console.log('Player session saved:', currentSessionId))
+            .catch((error) => console.error('Error saving player session:', error));
 
         // Auto-remove after 30 minutes of inactivity (safety measure)
         setTimeout(() => {
