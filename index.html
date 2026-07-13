@@ -122,13 +122,15 @@
         <div class="wood-panel !border-t-0 rounded-b-xl p-6">
             <div class="flex justify-between items-end mb-2">
                 <span class="stat-digits text-[10px] md:text-sm text-[var(--gold-bright)]">MOVES LEFT: <span id="ui-moves">0</span></span>
-                <div class="flex items-center gap-2 md:gap-4">
-                    <div class="flex items-center gap-1 label-caps text-[10px] text-[var(--parchment-dim)] uppercase tracking-tighter" id="game-player-count">
-                        <span>Online:</span>
-                        <span id="game-player-number" class="text-[var(--emerald)] font-bold player-number placeholder" aria-live="polite">--</span>
+                <div class="flex items-center gap-3 md:gap-4">
+                    <div class="text-center label-caps text-[9px] text-[var(--parchment-dim)] uppercase tracking-tighter leading-tight" id="game-player-count">
+                        <p>Online</p>
+                        <p id="game-player-number" class="text-[var(--emerald)] font-bold player-number placeholder" aria-live="polite">--</p>
                     </div>
-                    <button id="sound-toggle" onclick="toggleSound()" class="label-caps text-[10px] text-[var(--parchment-dim)] hover:text-[var(--gold-bright)] uppercase tracking-tighter underline">Sound: On</button>
-                    <button onclick="location.reload()" class="label-caps text-[10px] text-[var(--parchment-dim)] hover:text-[var(--gold-bright)] uppercase tracking-tighter underline">Abandon Quest</button>
+                    <button id="sound-toggle" onclick="toggleSound()" aria-label="Sound: On" title="Sound: On" class="text-[var(--parchment-dim)] hover:text-[var(--gold-bright)] transition-colors"></button>
+                    <button onclick="location.reload()" aria-label="Abandon Quest" title="Abandon Quest" class="text-[var(--parchment-dim)] hover:text-[var(--gold-bright)] transition-colors">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 md:w-5 md:h-5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+                    </button>
                 </div>
             </div>
             <div class="w-full bg-[var(--wood-dark)] h-6 rounded-full overflow-hidden border-2 border-[rgba(201,162,39,0.5)]">

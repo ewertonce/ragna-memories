@@ -115,9 +115,16 @@ function toggleSound() {
     if (!isMuted) playFlipSound();
 }
 
+const SOUND_ICON_ON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 md:w-5 md:h-5"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16 8a5 5 0 0 1 0 8"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+const SOUND_ICON_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 md:w-5 md:h-5"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>';
+
 function updateSoundToggleUI() {
     const btn = document.getElementById('sound-toggle');
-    if (btn) btn.innerText = isMuted ? 'Sound: Off' : 'Sound: On';
+    if (!btn) return;
+    const label = isMuted ? 'Sound: Off' : 'Sound: On';
+    btn.innerHTML = isMuted ? SOUND_ICON_OFF : SOUND_ICON_ON;
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('title', label);
 }
 
 function setDiff(name, count, moves) {
