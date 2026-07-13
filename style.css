@@ -263,3 +263,18 @@ body {
         max-width: 160px;
     }
 }
+
+/* Player count placeholder styling */
+.player-number { font-weight: 700; }
+.player-number.placeholder {
+    display: inline-block;
+    color: transparent;
+    background: linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shimmer 1.6s linear infinite;
+    border-radius: 4px;
+    padding: 0 6px;
+}
+@keyframes shimmer { 0% { background-position: -150% 0; } 100% { background-position: 150% 0; } }

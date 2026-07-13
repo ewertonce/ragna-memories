@@ -516,16 +516,18 @@ function updatePlayerCountUI(count) {
     const setupCountEl = document.getElementById('setup-player-count');
     const setupNumberEl = document.getElementById('setup-player-number');
     if (setupCountEl && setupNumberEl) {
-        setupCountEl.style.display = 'block';
+        // Don't toggle visibility — keep placeholder visible by default.
         setupNumberEl.innerText = count;
+        setupNumberEl.classList.remove('placeholder');
     }
 
     // Update game UI player count
     const gameCountEl = document.getElementById('game-player-count');
     const gameNumberEl = document.getElementById('game-player-number');
     if (gameCountEl && gameNumberEl) {
-        gameCountEl.style.display = 'block';
+        // Keep container visible; just update the number and remove placeholder styling.
         gameNumberEl.innerText = count;
+        gameNumberEl.classList.remove('placeholder');
     }
 }
 
