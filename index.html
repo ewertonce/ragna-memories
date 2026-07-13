@@ -7,6 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Press+Start+2P&display=swap" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
+    <!-- Firebase SDK -->
+    <script defer src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/11.0.2/firebase-database-compat.js"></script>
+    <script defer src="firebase-config.js"></script>
 </head>
 <body class="h-screen h-[100dvh] flex items-center justify-center p-4">
 
@@ -37,6 +41,14 @@
             <span class="rivet" style="bottom: 10px; right: 10px;"></span>
 
             <h1 class="rune-title text-3xl text-[var(--gold-bright)] mb-6 text-center leading-relaxed">Choose Your Path</h1>
+
+            <!-- Players Online Counter -->
+            <div id="setup-player-count" class="mb-6 text-center hidden">
+                <p class="label-caps text-[9px] text-[var(--parchment-dim)] uppercase tracking-widest mb-1">Adventurers Online</p>
+                <p class="text-[var(--emerald)] font-bold text-lg stat-digits">
+                    <span id="setup-player-number">--</span>
+                </p>
+            </div>
 
             <div class="space-y-4">
                 <div>
@@ -98,6 +110,10 @@
 			<div class="text-right">
 				<p class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase">Rank</p>
 				<p id="ui-diff" class="text-[var(--burgundy-bright)] font-bold uppercase">---</p>
+			</div>
+			<div class="text-right pl-8 border-l border-[rgba(201,162,39,0.2)]" id="game-player-count" style="display: none;">
+				<p class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase">Online</p>
+				<p id="game-player-number" class="text-[var(--emerald)] font-bold">--</p>
 			</div>
 		</div>
 

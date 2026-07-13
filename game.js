@@ -403,3 +403,144 @@ function checkGameOver() {
         });
     }
 }
+
+// ========== FIREBASE PLAYER COUNT TRACKING ==========
+
+let currentSessionId = null;
+let playerCountListener = null;
+
+/**
+ * Generates a unique session ID for this player
+ */
+function generateSessionId() {
+    return `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+
+/**
+ * Initialize Firebase player count tracking
+ * Listens to the active sessions in the database and updates the UI
+ */
+function initPlayerCountTracking() {
+    if (!window.firebaseInitialized || !window.firebase) {
+        console.log('Firebase not available, skipping player count tracking');
+        return;
+    }
+
+    try {
+        const db = firebase.database();
+
+        // Listener for real-time player count updates
+        playerCountListener = db.ref('activeSessions').on('value', (snapshot) => {
+            const sessions = snapshot.val() || {};
+            const playerCount = Object.keys(sessions).length;
+            updatePlayerCountUI(playerCount);
+        }, (error) => {
+            console.error('Error reading player count:', error);
+        });
+    } catch (error) {
+        console.error('Firebase player count tracking error:', error);
+    }
+}
+
+/**
+ * Add current player's session to Firebase
+ */
+function startPlayerSession() {
+    if (!window.firebaseInitialized || !window.firebase) {
+        return;
+    }
+
+    try {
+        const db = firebase.database();
+        currentSessionId = generateSessionId();
+
+        const sessionData = {
+            sessionId: currentSessionId,
+            joinedAt: firebase.database.ServerValue.TIMESTAMP,
+            adventurer: document.getElementById('ui-name')?.innerText || 'Adventurer',
+            rank: currentDiff || 'Unknown'
+        };
+
+        // Add this session to the database
+        db.ref(`activeSessions/${currentSessionId}`).set(sessionData);
+
+        // Auto-remove after 30 minutes of inactivity (safety measure)
+        setTimeout(() => {
+            if (currentSessionId) {
+                endPlayerSession();
+            }
+        }, 30 * 60 * 1000);
+    } catch (error) {
+        console.error('Error starting player session:', error);
+    }
+}
+
+/**
+ * Remove current player's session from Firebase
+ */
+function endPlayerSession() {
+    if (!window.firebaseInitialized || !window.firebase || !currentSessionId) {
+        return;
+    }
+
+    try {
+        const db = firebase.database();
+        db.ref(`activeSessions/${currentSessionId}`).remove();
+        currentSessionId = null;
+    } catch (error) {
+        console.error('Error ending player session:', error);
+    }
+}
+
+/**
+ * Update the player count UI elements
+ */
+function updatePlayerCountUI(count) {
+    // Update setup modal player count
+    const setupCountEl = document.getElementById('setup-player-count');
+    const setupNumberEl = document.getElementById('setup-player-number');
+    if (setupCountEl && setupNumberEl) {
+        setupCountEl.style.display = 'block';
+        setupNumberEl.innerText = count;
+    }
+
+    // Update game UI player count
+    const gameCountEl = document.getElementById('game-player-count');
+    const gameNumberEl = document.getElementById('game-player-number');
+    if (gameCountEl && gameNumberEl) {
+        gameCountEl.style.display = 'block';
+        gameNumberEl.innerText = count;
+    }
+}
+
+/**
+ * Clean up Firebase listeners and sessions when page unloads
+ */
+function cleanupFirebase() {
+    if (playerCountListener && window.firebaseInitialized && window.firebase) {
+        try {
+            firebase.database().ref('activeSessions').off('value', playerCountListener);
+        } catch (error) {
+            console.error('Error removing Firebase listener:', error);
+        }
+    }
+    endPlayerSession();
+}
+
+// Initialize player count tracking when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPlayerCountTracking);
+} else {
+    initPlayerCountTracking();
+}
+
+// Hook into startGame to begin a player session
+const originalStartGame = startGame;
+startGame = function() {
+    originalStartGame.call(this);
+    startPlayerSession();
+};
+
+// Clean up when page unloads
+window.addEventListener('beforeunload', cleanupFirebase);
+window.addEventListener('unload', cleanupFirebase);
