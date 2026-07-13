@@ -12,10 +12,13 @@
  *      "rules": {
  *        "activeSessions": {
  *          ".read": true,
+ *          ".write": true,
  *          ".indexOn": ["sessionId"]
  *        }
  *      }
  *    }
+ *
+ * Note: This rule set is intentionally permissive for early development and demo purposes.
  */
 
 const firebaseConfig = {

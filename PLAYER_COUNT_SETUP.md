@@ -31,12 +31,15 @@ This implementation adds a real-time player count indicator to Ragna-Memory usin
   "rules": {
     "activeSessions": {
       ".read": true,
+      ".write": true,
       ".indexOn": ["sessionId"]
     }
   }
 }
 ```
 3. Click "Publish"
+
+> Note: This rule set is intentionally permissive for this feature and is suitable for a public demo or early development. If you want more security later, restrict writes or require authentication.
 
 ### Step 4: Get Your Firebase Config
 1. Go to **Project Settings** (gear icon) > **General**
