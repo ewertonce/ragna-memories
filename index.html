@@ -111,10 +111,6 @@
 				<p class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase">Rank</p>
 				<p id="ui-diff" class="text-[var(--burgundy-bright)] font-bold uppercase">---</p>
 			</div>
-            <div class="text-right pl-2 md:pl-8 border-l border-[rgba(201,162,39,0.2)]" id="game-player-count">
-				<p class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase">Online</p>
-                <p id="game-player-number" class="text-[var(--emerald)] font-bold player-number placeholder" aria-live="polite">--</p>
-			</div>
 		</div>
 
         <div class="relative flex-grow overflow-hidden">
@@ -125,8 +121,12 @@
 
         <div class="wood-panel !border-t-0 rounded-b-xl p-6">
             <div class="flex justify-between items-end mb-2">
-                <span class="stat-digits text-sm text-[var(--gold-bright)]">MOVES LEFT: <span id="ui-moves">0</span></span>
-                <div class="flex items-center gap-4">
+                <span class="stat-digits text-[10px] md:text-sm text-[var(--gold-bright)]">MOVES LEFT: <span id="ui-moves">0</span></span>
+                <div class="flex items-center gap-2 md:gap-4">
+                    <div class="flex items-center gap-1 label-caps text-[10px] text-[var(--parchment-dim)] uppercase tracking-tighter" id="game-player-count">
+                        <span>Online:</span>
+                        <span id="game-player-number" class="text-[var(--emerald)] font-bold player-number placeholder" aria-live="polite">--</span>
+                    </div>
                     <button id="sound-toggle" onclick="toggleSound()" class="label-caps text-[10px] text-[var(--parchment-dim)] hover:text-[var(--gold-bright)] uppercase tracking-tighter underline">Sound: On</button>
                     <button onclick="location.reload()" class="label-caps text-[10px] text-[var(--parchment-dim)] hover:text-[var(--gold-bright)] uppercase tracking-tighter underline">Abandon Quest</button>
                 </div>
