@@ -449,7 +449,8 @@ function initPlayerCountTracking() {
         // Listener for real-time player count updates
         playerCountListener = db.ref('activeSessions').on('value', (snapshot) => {
             const sessions = snapshot.val() || {};
-            const playerCount = Object.keys(sessions).length;
+            const cutoff = Date.now() - 30 * 60 * 1000;
+            const playerCount = Object.values(sessions).filter((session) => session.joinedAt >= cutoff).length;
             console.log('Player count updated:', playerCount);
             updatePlayerCountUI(playerCount);
         }, (error) => {
@@ -482,8 +483,15 @@ function startPlayerSession() {
 
         console.log('Starting player session:', sessionData);
 
+        const sessionRef = db.ref(`activeSessions/${currentSessionId}`);
+
+        // Server-side cleanup: removes this session as soon as Firebase detects
+        // the connection dropped (crash, force-quit, lost network, etc.), unlike
+        // beforeunload/unload which don't reliably fire in those cases.
+        sessionRef.onDisconnect().remove();
+
         // Add this session to the database
-        db.ref(`activeSessions/${currentSessionId}`).set(sessionData)
+        sessionRef.set(sessionData)
             .then(() => console.log('Player session saved:', currentSessionId))
             .catch((error) => console.error('Error saving player session:', error));
 
