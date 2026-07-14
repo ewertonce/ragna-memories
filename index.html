@@ -121,11 +121,11 @@
 
         <div class="wood-panel !border-t-0 rounded-b-xl p-6">
             <div class="flex justify-between items-end mb-2">
-                <span class="stat-digits text-[10px] md:text-sm text-[var(--gold-bright)]">MOVES LEFT: <span id="ui-moves">0</span></span>
+                <span class="text-xs md:text-sm text-[var(--gold-bright)]">MOVES LEFT: <span id="ui-moves">0</span></span>
                 <div class="flex items-center gap-3 md:gap-4">
-                    <div class="text-center label-caps text-[9px] text-[var(--parchment-dim)] uppercase tracking-tighter leading-tight" id="game-player-count">
-                        <p>Online</p>
-                        <p id="game-player-number" class="text-[var(--gold-bright)] font-bold player-number placeholder" aria-live="polite">--</p>
+                    <div class="text-center leading-tight" id="game-player-count">
+                        <p class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase tracking-tighter">Online</p>
+                        <p id="game-player-number" class="text-[var(--gold-bright)] font-bold text-xs md:text-sm player-number placeholder" aria-live="polite">--</p>
                     </div>
                     <button id="sound-toggle" onclick="toggleSound()" aria-label="Sound: On" title="Sound: On" class="text-[var(--parchment-dim)] hover:text-[var(--gold-bright)] transition-colors"></button>
                     <button onclick="location.reload()" aria-label="Abandon Quest" title="Abandon Quest" class="text-[var(--parchment-dim)] hover:text-[var(--gold-bright)] transition-colors">
