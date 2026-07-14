@@ -207,8 +207,8 @@ body {
 }
 
 #game-ui {
-    height: 100vh;
-    height: 100dvh;
+    height: calc(100vh - 2rem);
+    height: calc(100dvh - 2rem);
     display: flex;
     flex-direction: column;
     overflow: hidden; /* Prevent the whole page from scrolling */
