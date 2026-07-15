@@ -214,6 +214,12 @@ body {
     overflow: hidden; /* Prevent the whole page from scrolling */
 }
 
+.leaderboard-tab-active {
+    background: rgba(201, 162, 39, 0.25);
+    border-color: var(--gold-bright) !important;
+    color: var(--gold-bright) !important;
+}
+
 .combo-popup {
     position: absolute;
     top: 50%;

@@ -139,8 +139,12 @@ function setDiff(name, count, moves) {
 // Best score/time per rank (persisted in localStorage)
 const RANK_NAMES = ['Novice', 'Swordsman', 'Knight', 'Lord Knight'];
 
+function rankSlug(rank) {
+    return rank.replace(/\s+/g, '-').toLowerCase();
+}
+
 function bestStorageKey(rank) {
-    return `ragna-best-${rank.replace(/\s+/g, '-').toLowerCase()}`;
+    return `ragna-best-${rankSlug(rank)}`;
 }
 
 function getBest(rank) {
@@ -171,6 +175,85 @@ function renderBestLabels() {
         const best = getBest(rank);
         el.textContent = best.score > 0 ? `Best: ${best.score} pts · ${best.time}s` : 'Best: —';
     });
+}
+
+// ========== FIREBASE GLOBAL LEADERBOARD ==========
+
+function sanitizeNicknameKey(nickname) {
+    return nickname.trim().toLowerCase().replace(/[.#$\[\]/]/g, '_') || 'adventurer';
+}
+
+function submitScoreToLeaderboard(rank, nickname, finalScore, finalTime) {
+    if (!window.firebaseInitialized || !window.firebase) return;
+
+    try {
+        const db = firebase.database();
+        const nicknameKey = sanitizeNicknameKey(nickname);
+        db.ref(`scores/${rankSlug(rank)}/${nicknameKey}`).set({
+            nickname,
+            score: finalScore,
+            time: finalTime,
+            updatedAt: firebase.database.ServerValue.TIMESTAMP
+        }).catch((error) => console.error('Error submitting score:', error));
+    } catch (error) {
+        console.error('Error submitting score:', error);
+    }
+}
+
+function fetchLeaderboard(rank) {
+    if (!window.firebaseInitialized || !window.firebase) return Promise.resolve([]);
+
+    const db = firebase.database();
+    return db.ref(`scores/${rankSlug(rank)}`)
+        .orderByChild('score')
+        .limitToLast(10)
+        .once('value')
+        .then((snapshot) => {
+            const entries = snapshot.val() || {};
+            return Object.values(entries).sort((a, b) => b.score - a.score);
+        })
+        .catch((error) => {
+            console.error('Error fetching leaderboard:', error);
+            return [];
+        });
+}
+
+function renderLeaderboard(rank) {
+    const rowsEl = document.getElementById('leaderboard-rows');
+    const emptyEl = document.getElementById('leaderboard-empty');
+    if (!rowsEl) return;
+
+    document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+        tab.classList.toggle('leaderboard-tab-active', tab.dataset.rank === rank);
+    });
+
+    rowsEl.innerHTML = '';
+    if (emptyEl) emptyEl.classList.add('hidden');
+
+    fetchLeaderboard(rank).then((entries) => {
+        if (entries.length === 0) {
+            if (emptyEl) emptyEl.classList.remove('hidden');
+            return;
+        }
+
+        rowsEl.innerHTML = entries.map((entry, i) => `
+            <tr class="border-b border-[rgba(201,162,39,0.2)]">
+                <td class="py-1.5 pr-2 text-[var(--parchment-dim)]">${i + 1}</td>
+                <td class="py-1.5 pr-2 text-[var(--parchment)] truncate max-w-[8rem]">${entry.nickname}</td>
+                <td class="py-1.5 pr-2 text-[var(--gold-bright)] font-bold text-right">${entry.score}</td>
+                <td class="py-1.5 text-[var(--parchment-dim)] text-right">${entry.time}s</td>
+            </tr>
+        `).join('');
+    });
+}
+
+function openLeaderboard() {
+    document.getElementById('leaderboard-modal').classList.remove('hidden');
+    renderLeaderboard(currentDiff || 'Novice');
+}
+
+function closeLeaderboard() {
+    document.getElementById('leaderboard-modal').classList.add('hidden');
 }
 
 function startTimer() {
@@ -383,6 +466,10 @@ function checkGameOver() {
         clearInterval(timerInterval);
         playVictorySound();
         const { newBestScore, newBestTime } = updateBestOnVictory(currentDiff, score, secondsElapsed);
+        if (newBestScore || newBestTime) {
+            const nickname = document.getElementById('ui-name')?.innerText || 'Adventurer';
+            submitScoreToLeaderboard(currentDiff, nickname, score, secondsElapsed);
+        }
         showModal({
             title: 'Quest Complete!',
             message: (newBestScore || newBestTime)

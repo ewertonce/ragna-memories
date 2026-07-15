@@ -7,13 +7,23 @@
  * 3. In Project Settings, create a Web app and copy your config
  * 4. Replace the config object below with your actual Firebase credentials
  * 5. In Firebase Realtime Database, create these rules (for security):
- * 
+ *
  *    {
  *      "rules": {
  *        "activeSessions": {
  *          ".read": true,
  *          ".write": true,
  *          ".indexOn": ["sessionId"]
+ *        },
+ *        "scores": {
+ *          "$rank": {
+ *            ".read": true,
+ *            ".indexOn": ["score"],
+ *            "$nickname": {
+ *              ".write": true,
+ *              ".validate": "newData.hasChildren(['nickname','score','time','updatedAt']) && newData.child('score').isNumber() && newData.child('score').val() >= 0 && newData.child('score').val() <= 100000 && newData.child('time').isNumber() && newData.child('time').val() > 0"
+ *            }
+ *          }
  *        }
  *      }
  *    }

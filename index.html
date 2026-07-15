@@ -78,7 +78,9 @@
                     </div>
                 </div>
 
-                <button onclick="startGame()" class="label-caps w-full mt-6 bg-gradient-to-b from-[var(--burgundy-bright)] to-[var(--burgundy)] border-2 border-[var(--gold)] hover:from-[var(--gold-bright)] hover:to-[var(--gold)] hover:text-[var(--ink)] py-4 rounded-lg text-lg font-bold uppercase tracking-widest shadow-lg shadow-black/50 transition">Begin Quest</button>
+                <button onclick="openLeaderboard()" class="label-caps w-full mt-4 border-2 border-[rgba(201,162,39,0.4)] text-[var(--parchment-dim)] hover:text-[var(--gold-bright)] hover:border-[var(--gold-bright)] py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition">View Leaderboard</button>
+
+                <button onclick="startGame()" class="label-caps w-full mt-3 bg-gradient-to-b from-[var(--burgundy-bright)] to-[var(--burgundy)] border-2 border-[var(--gold)] hover:from-[var(--gold-bright)] hover:to-[var(--gold)] hover:text-[var(--ink)] py-4 rounded-lg text-lg font-bold uppercase tracking-widest shadow-lg shadow-black/50 transition">Begin Quest</button>
 
                 <p class="text-[10px] leading-relaxed text-[var(--parchment-dim)]/70 text-center mt-4">This page was created purely out of nostalgia and love for Ragnarok Online. All original game content, artwork and trademarks belong to Gravity Co., Ltd.</p>
             </div>
@@ -146,6 +148,39 @@
             <h2 id="modal-title" class="rune-title text-2xl mb-4 leading-relaxed"></h2>
             <div id="modal-body" class="text-left mb-6"></div>
             <button id="modal-btn" class="label-caps w-full bg-gradient-to-b from-[var(--burgundy-bright)] to-[var(--burgundy)] border-2 border-[var(--gold)] hover:from-[var(--gold-bright)] hover:to-[var(--gold)] hover:text-[var(--ink)] py-3 rounded-lg text-base font-bold uppercase tracking-widest shadow-lg shadow-black/50 transition"></button>
+        </div>
+    </div>
+
+    <div id="leaderboard-modal" class="hidden fixed inset-0 h-[100dvh] z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+        <div class="wood-panel p-8 rounded-lg w-full max-w-md shadow-[0_0_60px_rgba(236,202,94,0.25)]">
+            <span class="rivet" style="top: 10px; left: 10px;"></span>
+            <span class="rivet" style="top: 10px; right: 10px;"></span>
+            <span class="rivet" style="bottom: 10px; left: 10px;"></span>
+            <span class="rivet" style="bottom: 10px; right: 10px;"></span>
+
+            <h2 class="rune-title text-2xl mb-4 leading-relaxed text-center">Leaderboard</h2>
+
+            <div class="grid grid-cols-4 gap-1 mb-4">
+                <button class="leaderboard-tab label-caps text-[10px] py-2 rounded border-2 border-[rgba(201,162,39,0.3)] text-[var(--parchment)] uppercase transition" data-rank="Novice" onclick="renderLeaderboard('Novice')">Novice</button>
+                <button class="leaderboard-tab label-caps text-[10px] py-2 rounded border-2 border-[rgba(201,162,39,0.3)] text-[var(--parchment)] uppercase transition" data-rank="Swordsman" onclick="renderLeaderboard('Swordsman')">Swordsman</button>
+                <button class="leaderboard-tab label-caps text-[10px] py-2 rounded border-2 border-[rgba(201,162,39,0.3)] text-[var(--parchment)] uppercase transition" data-rank="Knight" onclick="renderLeaderboard('Knight')">Knight</button>
+                <button class="leaderboard-tab label-caps text-[10px] py-2 rounded border-2 border-[rgba(201,162,39,0.3)] text-[var(--parchment)] uppercase transition" data-rank="Lord Knight" onclick="renderLeaderboard('Lord Knight')">Lord Knight</button>
+            </div>
+
+            <table class="w-full text-sm mb-2">
+                <thead>
+                    <tr class="border-b border-[rgba(201,162,39,0.4)]">
+                        <th class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase text-left py-1.5 pr-2 font-normal">#</th>
+                        <th class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase text-left py-1.5 pr-2 font-normal">Adventurer</th>
+                        <th class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase text-right py-1.5 pr-2 font-normal">Score</th>
+                        <th class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase text-right py-1.5 font-normal">Time</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-rows"></tbody>
+            </table>
+            <p id="leaderboard-empty" class="hidden text-center text-[var(--parchment-dim)] text-sm py-4">No adventurers yet — be the first!</p>
+
+            <button onclick="closeLeaderboard()" class="label-caps w-full mt-4 bg-gradient-to-b from-[var(--burgundy-bright)] to-[var(--burgundy)] border-2 border-[var(--gold)] hover:from-[var(--gold-bright)] hover:to-[var(--gold)] hover:text-[var(--ink)] py-3 rounded-lg text-base font-bold uppercase tracking-widest shadow-lg shadow-black/50 transition">Close</button>
         </div>
     </div>
 
