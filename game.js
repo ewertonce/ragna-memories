@@ -158,14 +158,18 @@ function getBest(rank) {
 
 function updateBestOnVictory(rank, finalScore, finalTime) {
     const best = getBest(rank);
-    const newBestScore = finalScore > best.score;
-    const newBestTime = best.time === null || finalTime < best.time;
+    // Score and time are updated together as a single run's result (never
+    // mixed across separate games), matching how the Firebase leaderboard
+    // decides whether a run beats the existing entry.
+    const isNewBest = best.time === null || finalScore > best.score || (finalScore === best.score && finalTime < best.time);
 
-    if (newBestScore) best.score = finalScore;
-    if (newBestTime) best.time = finalTime;
-    localStorage.setItem(bestStorageKey(rank), JSON.stringify(best));
+    if (isNewBest) {
+        best.score = finalScore;
+        best.time = finalTime;
+        localStorage.setItem(bestStorageKey(rank), JSON.stringify(best));
+    }
 
-    return { best, newBestScore, newBestTime };
+    return { best, isNewBest };
 }
 
 function renderBestLabels() {
@@ -474,12 +478,12 @@ function checkGameOver() {
     if (matches === totalPairs) {
         clearInterval(timerInterval);
         playVictorySound();
-        const { newBestScore, newBestTime } = updateBestOnVictory(currentDiff, score, secondsElapsed);
+        const { isNewBest } = updateBestOnVictory(currentDiff, score, secondsElapsed);
         const nickname = document.getElementById('ui-name')?.innerText || 'Adventurer';
         submitScoreToLeaderboard(currentDiff, nickname, score, secondsElapsed);
         showModal({
             title: 'Quest Complete!',
-            message: (newBestScore || newBestTime)
+            message: isNewBest
                 ? '<span class="text-[var(--gold-bright)] font-bold uppercase tracking-widest">New Best!</span>'
                 : '',
             stats: [
