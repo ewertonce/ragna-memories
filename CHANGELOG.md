@@ -2,6 +2,10 @@
 
 All notable changes to Ragna-Memory are documented here.
 
+## [1.5.2] - 2026-07-15
+### Fixed
+- Leaderboard modal no longer resizes once scores finish loading; results area now has a fixed height with a loading state shown while fetching
+
 ## [1.5.1] - 2026-07-15
 ### Fixed
 - Local "Best:" label no longer mixes the best score and best time from two different games into a combination that never actually happened in one run; it now tracks them as a single paired result, matching how the leaderboard decides a new best
