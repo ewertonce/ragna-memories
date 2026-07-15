@@ -189,11 +189,20 @@ function submitScoreToLeaderboard(rank, nickname, finalScore, finalTime) {
     try {
         const db = firebase.database();
         const nicknameKey = sanitizeNicknameKey(nickname);
-        db.ref(`scores/${rankSlug(rank)}/${nicknameKey}`).set({
-            nickname,
-            score: finalScore,
-            time: finalTime,
-            updatedAt: firebase.database.ServerValue.TIMESTAMP
+        // Gate the update on this nickname's existing remote entry (not the
+        // local device's own best) so a new personal best always reaches the
+        // shared leaderboard, even on a device/browser with unrelated local
+        // best-score history for this rank.
+        db.ref(`scores/${rankSlug(rank)}/${nicknameKey}`).transaction((current) => {
+            if (!current || finalScore > current.score || (finalScore === current.score && finalTime < current.time)) {
+                return {
+                    nickname,
+                    score: finalScore,
+                    time: finalTime,
+                    updatedAt: firebase.database.ServerValue.TIMESTAMP
+                };
+            }
+            return; // abort: existing remote entry is already as good or better
         }).catch((error) => console.error('Error submitting score:', error));
     } catch (error) {
         console.error('Error submitting score:', error);
@@ -466,10 +475,8 @@ function checkGameOver() {
         clearInterval(timerInterval);
         playVictorySound();
         const { newBestScore, newBestTime } = updateBestOnVictory(currentDiff, score, secondsElapsed);
-        if (newBestScore || newBestTime) {
-            const nickname = document.getElementById('ui-name')?.innerText || 'Adventurer';
-            submitScoreToLeaderboard(currentDiff, nickname, score, secondsElapsed);
-        }
+        const nickname = document.getElementById('ui-name')?.innerText || 'Adventurer';
+        submitScoreToLeaderboard(currentDiff, nickname, score, secondsElapsed);
         showModal({
             title: 'Quest Complete!',
             message: (newBestScore || newBestTime)
