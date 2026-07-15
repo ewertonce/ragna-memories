@@ -234,6 +234,7 @@ function fetchLeaderboard(rank) {
 function renderLeaderboard(rank) {
     const rowsEl = document.getElementById('leaderboard-rows');
     const emptyEl = document.getElementById('leaderboard-empty');
+    const loadingEl = document.getElementById('leaderboard-loading');
     if (!rowsEl) return;
 
     document.querySelectorAll('.leaderboard-tab').forEach(tab => {
@@ -242,8 +243,11 @@ function renderLeaderboard(rank) {
 
     rowsEl.innerHTML = '';
     if (emptyEl) emptyEl.classList.add('hidden');
+    if (loadingEl) loadingEl.classList.remove('hidden');
 
     fetchLeaderboard(rank).then((entries) => {
+        if (loadingEl) loadingEl.classList.add('hidden');
+
         if (entries.length === 0) {
             if (emptyEl) emptyEl.classList.remove('hidden');
             return;

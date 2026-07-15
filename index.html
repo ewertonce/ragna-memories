@@ -167,18 +167,21 @@
                 <button class="leaderboard-tab label-caps text-[10px] py-2 rounded border-2 border-[rgba(201,162,39,0.3)] text-[var(--parchment)] uppercase transition" data-rank="Lord Knight" onclick="renderLeaderboard('Lord Knight')">Lord Knight</button>
             </div>
 
-            <table class="w-full text-sm mb-2">
-                <thead>
-                    <tr class="border-b border-[rgba(201,162,39,0.4)]">
-                        <th class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase text-left py-1.5 pr-2 font-normal">#</th>
-                        <th class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase text-left py-1.5 pr-2 font-normal">Adventurer</th>
-                        <th class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase text-right py-1.5 pr-2 font-normal">Score</th>
-                        <th class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase text-right py-1.5 font-normal">Time</th>
-                    </tr>
-                </thead>
-                <tbody id="leaderboard-rows"></tbody>
-            </table>
-            <p id="leaderboard-empty" class="hidden text-center text-[var(--parchment-dim)] text-sm py-4">No adventurers yet — be the first!</p>
+            <div id="leaderboard-results" class="min-h-[22rem]">
+                <table class="w-full text-sm mb-2">
+                    <thead>
+                        <tr class="border-b border-[rgba(201,162,39,0.4)]">
+                            <th class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase text-left py-1.5 pr-2 font-normal">#</th>
+                            <th class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase text-left py-1.5 pr-2 font-normal">Adventurer</th>
+                            <th class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase text-right py-1.5 pr-2 font-normal">Score</th>
+                            <th class="label-caps text-[10px] text-[var(--parchment-dim)] uppercase text-right py-1.5 font-normal">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-rows"></tbody>
+                </table>
+                <p id="leaderboard-loading" class="hidden text-center text-[var(--parchment-dim)] text-sm py-4">Loading…</p>
+                <p id="leaderboard-empty" class="hidden text-center text-[var(--parchment-dim)] text-sm py-4">No adventurers yet — be the first!</p>
+            </div>
 
             <button onclick="closeLeaderboard()" class="label-caps w-full mt-4 bg-gradient-to-b from-[var(--burgundy-bright)] to-[var(--burgundy)] border-2 border-[var(--gold)] hover:from-[var(--gold-bright)] hover:to-[var(--gold)] hover:text-[var(--ink)] py-3 rounded-lg text-base font-bold uppercase tracking-widest shadow-lg shadow-black/50 transition">Close</button>
         </div>
