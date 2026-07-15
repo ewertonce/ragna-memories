@@ -2,6 +2,16 @@
 
 All notable changes to Ragna-Memory are documented here.
 
+## [1.5.0] - 2026-07-15
+### Added
+- Global leaderboard per rank, backed by Firebase, with a "View Leaderboard" modal showing the top 10 (issue #6)
+- Cache-busting version query string on `game.js`, `firebase-config.js`, and `style.css`
+
+### Fixed
+- Game panel no longer touches the screen edges (padding now matches the page's own margin)
+- "Adventurers Online" count no longer includes stale sessions from crashed/closed tabs (Firebase `onDisconnect` + age-filtered count)
+- Leaderboard no longer silently skips a genuinely better score just because the playing device had unrelated local best-score history for that rank
+
 ## [1.4.0] - 2026-07-09
 ### Added
 - 25 more monster cards (ambernite, andre, ant_egg, bigfoot, boa, chonchon, creamy, drops, fabre, honet, hydra, lunatic, mandragora, pecopeco_egg, poporing, poring, pupa, roda_frog, santa_poring, smokie, spore, steel_chonchon, thief_bug_egg, vadon, zombie), growing the pool from 19 to 44 monsters
