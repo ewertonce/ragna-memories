@@ -1,0 +1,13 @@
+{
+  "name": "ragna-memories",
+  "version": "1.5.2",
+  "private": true,
+  "description": "Ragna-Memory: Evolution - a Ragnarok Online-themed memory matching game",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jsdom": "^20.0.3"
+  }
+}
